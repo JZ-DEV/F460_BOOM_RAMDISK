@@ -1,0 +1,196 @@
+cat << CTAG
+{
+    name:智能温度控制,
+		elements:[
+			`[ -d "/sys/module/msm_thermal" ] && MSMTHERMAL=/sys/module/msm_thermal;
+			if [ -d "$MSMTHERMAL/parameters" ]; then
+				if [ -f "$MSMTHERMAL/parameters/intelli_enabled" ]; then
+				ITE=\`bool $MSMTHERMAL/parameters/intelli_enabled\`;
+					$BB echo '{ SCheckBox:{
+							label:"温控总开关",
+							default:'$ITE',
+							action:"boolean '$MSMTHERMAL'/parameters/intelli_enabled"
+						}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/thermal_debug_mode" ]; then
+				TDM=\`$BB cat $MSMTHERMAL/parameters/thermal_debug_mode\`;
+					$BB echo '{ SCheckBox:{
+							label:"温控调试开关",
+							default:'$TDM',
+							action:"generic '$MSMTHERMAL'/parameters/thermal_debug_mode"
+						}},'
+				fi				
+				if [ -f "$MSMTHERMAL/parameters/poll_ms" ]; then
+				PMS=\`$BB cat $MSMTHERMAL/parameters/poll_ms\`;
+					$BB echo '{ SSeekBar:{
+						title:"温控采样时间",
+						description:"每经过一次采样时间，会检查一次温度，执行需要频率改变或热插拔改变，这个值越高温控操作密度越高，温度采样和操作也会越快.",
+						unit:" 毫秒",
+						step:10,
+						min:0,
+						max:3000,
+						default:'$PMS',
+						action:"generic '$MSMTHERMAL'/parameters/poll_ms"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/sensor_id" ]; then
+				SID=\`$BB cat $MSMTHERMAL/parameters/sensor_id\`;
+					$BB echo ' { SLiveLabel:{
+						title:"传感器温度",
+						refresh:1000,
+						action:"live Thermalzone"
+					}},
+					{ SOptionList:{
+						title:"温控传感器",
+						description:"智能温度所使用的传感器.0为处理器表面传感器，5-8为四个CPU核心内部传感器。默认为5，优先选择温度变化最块的传感器.",
+						default:'$SID',
+						action:"generic '$MSMTHERMAL'/parameters/sensor_id",
+						values:{
+							0:"0", 5:"5", 6:"6", 7:"7", 8:"8"
+						}
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/limit_temp_degC" ]; then
+				LT=\`$BB cat $MSMTHERMAL/parameters/limit_temp_degC\`
+					$BB echo '{ SPane:{
+					title:"温控频率控制",
+					}},
+					{ SSeekBar:{
+						title:"频率触发阈值",
+						description:"超过此值时开始降低频率.",
+						unit:"ºC",
+						step:1,
+						min:40,
+						max:110,
+						default:'$LT',
+						action:"generic '$MSMTHERMAL'/parameters/limit_temp_degC"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/temp_safety" ]; then
+				TS=\`$BB cat $MSMTHERMAL/parameters/temp_safety\`;
+					$BB echo '{ SCheckBox:{
+						label:"温控阈值极限开关",
+						description:"打开此开关后温控阈值将不会大于85°.",
+						default:'$TS',
+						action:"generic '$MSMTHERMAL'/parameters/temp_safety"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/limit_safe_temp_degC" ]; then
+				LST=\`$BB cat $MSMTHERMAL/parameters/limit_safe_temp_degC\`
+					$BB echo '{ SSeekBar:{
+						title:"安全降温值",
+						description:"在温控被触发后并且大于此值的情况下，频率会直接降低至最低值（此值不会小于频率触发值）.",
+						unit:"ºC",
+						step:1,
+						min:40,
+						max:110,
+						default:'$LST',
+						action:"generic '$MSMTHERMAL'/parameters/limit_safe_temp_degC"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/temp_hysteresis_degC" ]; then
+				TH=\`$BB cat $MSMTHERMAL/parameters/temp_hysteresis_degC\`;
+					$BB echo '{ SSeekBar:{
+						title:"升频滞后值",
+						description:"当温度低于阈值减去此值时才会开始增加频率.",
+						unit:"ºC",
+						step:1,
+						min:0,
+						max:20,
+						default:'$TH',
+						action:"generic '$MSMTHERMAL'/parameters/temp_hysteresis_degC"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/freq_control_mask" ]; then
+					$BB echo '{ SDescription:{
+						description:"受频率降低影响的核心:"
+					}},
+					{ SDescription:{
+						description:"勾选的核心会受到降频影响."
+					}}
+					{ SCheckBox:{
+						label:"核心 0",
+						action:"intellithermal freq core0"
+					}},
+					{ SCheckBox:{
+						label:"核心 1",
+						action:"intellithermal freq core1"
+					}},
+					{ SCheckBox:{
+						label:"核心 2",
+						action:"intellithermal freq core2"
+					}},
+					{ SCheckBox:{
+						label:"核心 3",
+						action:"intellithermal freq core3"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/freq_step" ]; then
+				FS=\`$BB cat $MSMTHERMAL/parameters/freq_step\`;
+					$BB echo '{ SSeekBar:{
+						title:"频率步进",
+						description:"降频时驱动降低的频率步数（见频率表）.",
+						step:1,
+						min:1,
+						max:10,
+						default:'$FS',
+						action:"generic '$MSMTHERMAL'/parameters/freq_step"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/thermal_limit_low" ]; then
+				TLL=\`$BB cat $MSMTHERMAL/parameters/thermal_limit_low\`;
+					$BB echo '{ SSeekBar:{
+						title:"温控频率最小值",
+						description:"0-19为频率所有步进，0对应300Mhz，20对应2.88Mhz，最低保证流畅度值为9（1.49Ghz），驱动控制不会低于此频率（如果其他程序设置了更低值将会被覆盖）.",
+						step:1,
+						min:1,
+						max:20,
+						default:'$TLL',
+						action:"generic '$MSMTHERMAL'/parameters/thermal_limit_low"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/core_limit_temp_degC" ]; then
+				CLT=\`$BB cat $MSMTHERMAL/parameters/core_limit_temp_degC\`;
+					$BB echo '{ SPane:{
+					title:"温控核心控制",
+					}},
+					{ SSeekBar:{
+						title:"热插拔温度",
+						description:"当温度高于此值时开始强制性关闭CPU.",
+						unit:"ºC",
+						step:1,
+						min:50,
+						max:110,
+						default:'$CLT',
+						action:"generic '$MSMTHERMAL'/parameters/core_limit_temp_degC"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/core_temp_hysteresis_degC" ]; then
+				CTHG=\`$BB cat $MSMTHERMAL/parameters/core_temp_hysteresis_degC\`;
+					$BB echo '	{ SSeekBar:{
+						title:"热插拔核心滞后温度",
+						description:"当温度低于热插拔阈值减去此值时才打开核心.",
+						unit:"ºC",
+						step:1,
+						min:0,
+						max:20,
+						default:'$CTHG',
+						action:"generic '$MSMTHERMAL'/parameters/core_temp_hysteresis_degC"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/core_control_mask" ]; then
+				CCM=\`$BB cat $MSMTHERMAL/parameters/core_control_mask\`;
+					$BB echo '	{ SOptionList:{
+						title:"热插拔保留核心数",
+						description:"当触发了温控热插拔后，驱动保留最小可打开的核心数（可被其他温控服务以及热插拔驱动覆盖）.",
+						default:'$CCM',
+						action:"generic '$MSMTHERMAL'/parameters/core_control_mask",
+						values:{
+							0:"全部核心在线", 12:"强行关闭2、3核心", 8:"强行关闭3核心",  14:"强行关闭1、2、3核心"
+						}
+					}},'
+				fi
+			fi`
+		]
+}
+CTAG

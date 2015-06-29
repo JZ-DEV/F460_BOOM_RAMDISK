@@ -103,17 +103,17 @@ cat << CTAG
 			GREEN=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_g\`;
 			RED=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_r\`;
 					$BB echo '{ SGeneric:{
-						title:"Blue",
+						title:"蓝色",
 						default:'$BLUE',
 						action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_b",
 					}},
 					{ SGeneric:{
-						title:"Green",
+						title:"绿色",
 						default:'$GREEN',
 						action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_g",
 					}},
 					{ SGeneric:{
-						title:"Red",
+						title:"红色",
 						default:'$RED',
 						action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_r",
 					}},
@@ -262,17 +262,17 @@ cat << CTAG
 							action:"gamma /sys/class/misc/gammacontrol/blue_whites",
 						}},
 						{ SGeneric:{
-							title:"Contrast",
+							title:"对比度",
 							default:'$CONTRAST',
 							action:"gamma /sys/class/misc/gammacontrol/contrast",
 						}},
 						{ SGeneric:{
-							title:"Brightness",
+							title:"亮度",
 							default:'$BRIGHTNESS',
 							action:"gamma /sys/class/misc/gammacontrol/brightness",
 						}},
 						{ SGeneric:{
-							title:"Saturation",
+							title:"饱和度",
 							default:'$SATURATION',
 							action:"gamma /sys/class/misc/gammacontrol/saturation",
 						}},
@@ -361,17 +361,17 @@ cat << CTAG
 			GREEN=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_green\`;
 			RED=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_red\`;
 				$BB echo '{ SGeneric:{
-							title:"Blue",
+							title:"蓝色",
 							default:'$BLUE',
 							action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_blue",
 						}},
 						{ SGeneric:{
-							title:"Green",
+							title:"绿色",
 							default:'$GREEN',
 							action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_green",
 						}},
 						{ SGeneric:{
-							title:"Red",
+							title:"红色",
 							default:'$RED',
 							action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_red",
 						}},'
@@ -585,8 +585,8 @@ cat << CTAG
 				if [ -f "/sys/devices/i2c-0/0-0038/lm3530_min_br" ]; then
 				BRMIN=\`$BB cat /sys/devices/i2c-0/0-0038/lm3530_min_br\`;
 					$BB echo '{ SSeekBar:{
-							title:"Min Brightness",
-							description:"Sets the minimum brightness level.",
+							title:"最小亮度",
+							description:"设置最小亮度.",
 							min:2,
 							max:114,
 							step:1,
@@ -597,8 +597,8 @@ cat << CTAG
 				if [ -f "/sys/devices/i2c-0/0-0038/lm3530_max_br" ]; then
 				BRMAX=\`$BB cat /sys/devices/i2c-0/0-0038/lm3530_max_br\`;
 					$BB echo '{ SSeekBar:{
-							title:"Max Brightness",
-							description:"Sets the maximum brightness level.",
+							title:"最大亮度",
+							description:"设置最大亮度.",
 							min:2,
 							max:114,
 							step:1,

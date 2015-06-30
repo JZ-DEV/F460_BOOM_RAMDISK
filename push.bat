@@ -1,5 +1,6 @@
 @echo off
 taskkill /f /im adb.exe
+adb wait-for-device
 
 :aaa
 adb shell su -c "pkill com.af.synapse"

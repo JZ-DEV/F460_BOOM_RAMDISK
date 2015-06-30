@@ -18,7 +18,7 @@ cat << CTAG
 		action:"generic /sys/kernel/msm_limiter/limiter_enabled",
 	}},
 	{ SSeekBar:{
-       		title:"CPU0 Max Frequency",
+       		title:"CPU0最大频率",
 		description:"设置CPU0最大频率. CPU0被用于绝大多数的关键内核进程，推荐这个值不小于1.7 GHz,",
 		default:`cat /sys/kernel/msm_limiter/resume_max_freq_0`,
 		action:"generic /sys/kernel/msm_limiter/resume_max_freq_0",
@@ -32,8 +32,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU1 Max Frequency",
-		description:"Set the maximum frequency the CPU1 scales up to.",
+       		title:"CPU1最大频率",
+		description:"设置CPU1最大频率.",
 		default:`cat /sys/kernel/msm_limiter/resume_max_freq_1`,
 		action:"generic /sys/kernel/msm_limiter/resume_max_freq_1",
 		values:{
@@ -46,8 +46,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU2 Max Frequency",
-		description:"Set the maximum frequency the CPU2 scales up to.",
+       		title:"CPU2最大频率",
+		description:"设置CPU2最大频率.",
 		default:`cat /sys/kernel/msm_limiter/resume_max_freq_2`,
 		action:"generic /sys/kernel/msm_limiter/resume_max_freq_2",
 		values:{
@@ -60,8 +60,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU3 Max Frequency",
-		description:"Set the maximum frequency the CPU3 scales up to.",
+       		title:"CPU3最大频率",
+		description:"设置CPU3最大频率..",
 		default:`cat /sys/kernel/msm_limiter/resume_max_freq_3`,
 		action:"generic /sys/kernel/msm_limiter/resume_max_freq_3",
 		values:{
@@ -74,8 +74,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU Max Screen Off Frequency",
-		description:"Set the maximum frequency all CPUs scales up to when device is suspended.",
+       		title:"熄屏后CPU最大频率",
+		description:"CPU熄屏后最大频率,对4个CPU核心均有效.",
 		default:`cat /sys/kernel/msm_limiter/suspend_max_freq`,,
 		action:"generic /sys/kernel/msm_limiter/suspend_max_freq",
 		values:{
@@ -88,8 +88,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU0 Min Frequency",
-		description:"Set the minimum frequency the CPU0 scales down to.",
+       		title:"CPU0最小频率",
+		description:"设置CPU0可以调节至的最低频率.",
 		default:`cat /sys/kernel/msm_limiter/suspend_min_freq_0`,
 		action:"generic /sys/kernel/msm_limiter/suspend_min_freq_0",
 		values:{
@@ -102,8 +102,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU1 Min Frequency",
-		description:"Set the minimum frequency the CPU1 scales down to.",
+       		title:"CPU1最小频率",
+		description:"设置CPU1可以调节至的最低频率.",
 		default:`cat /sys/kernel/msm_limiter/suspend_min_freq_1`,
 		action:"generic /sys/kernel/msm_limiter/suspend_min_freq_1",
 		values:{
@@ -116,8 +116,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU2 Min Frequency",
-		description:"Set the minimum frequency the CPU2 scales down to.",
+       		title:"CPU2最小频率",
+		description:"设置CPU2可以调节至的最低频率.",
 		default:`cat /sys/kernel/msm_limiter/suspend_min_freq_2`,
 		action:"generic /sys/kernel/msm_limiter/suspend_min_freq_2",
 		values:{
@@ -130,8 +130,8 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"CPU3 Min Frequency",
-		description:"Set the minimum frequency the CPU3 scales down to.",
+       		title:"CPU3最小频率",
+		description:"设置CPU3可以调节至的最低频率.",
 		default:`cat /sys/kernel/msm_limiter/suspend_min_freq_3`,
 		action:"generic /sys/kernel/msm_limiter/suspend_min_freq_3",
 		values:{
@@ -147,10 +147,10 @@ cat << CTAG
 		title:"CPU Boost",
 	}},
 	{ SDescription:{
-		description:"When certain important tasks migrate from a fast CPU to a slow CPU, CPU Boost Driver boosts the frequency of the slow CPU to at least as high as the fast CPU for a short duration. You can modify behavior of CPU Boost Driver below. CPU Boost helps alleviating poor user experience by elevating frequencies when required."
+		description:"当某些进程从一个高频CPU迁移另一个低频CPU时，CPU boost驱动程序将会在短时间内提升低频CPU的频率至第一个CPU的频率，在下面你可以改变CPU Boost Driver的参数"
 	}},
 	{ SSeekBar:{
-		title:"Boost Duration",
+		title:"CPU boost持续时间",
 		description:"Sets boost period for which CPU is boosted when task migrates to slower CPU.",
 		min:0, max:120,
 		default:`cat /sys/module/cpu_boost/parameters/boost_ms`,
@@ -226,7 +226,7 @@ cat << CTAG
 		}
 	}},
 	{ SSeekBar:{
-       		title:"Sync Threshold",
+       		title:"同步阈值",
 		description:"During CPU Boost, frequency of slower CPU is matched with that of faster CPU, we can set limit to maximum frequency allowed for frequency synchronization. Should be greater or equal to Input Event Boost Frequency.",
 		default:`cat /sys/module/cpu_boost/parameters/sync_threshold`,
 		action:"generic /sys/module/cpu_boost/parameters/sync_threshold",
@@ -261,10 +261,10 @@ cat << CTAG
 		action:"boolean /sys/module/workqueue/parameters/power_efficient",
 	}},
 	{ STitleBar:{
-		title:"CPU Governor"
+		title:"CPU调速器"
 	}},
 	{ SDescription:{
-		description:"The CPU governor determines how the respective CPU behaves in response to changes in workload. Changing the governor will impact how the CPU scales through the frequency steps available."
+		description:"CPU调速器决定CPU在应对各种工作负载情形时的行为。更改调速器会影响CPU如何在可用频率间切换频率大小."
 	}},
         { SOptionList:{
 		title:"CPU0",
@@ -364,7 +364,7 @@ cat << CTAG
 		]
         }},
 	{ STitleBar:{
-		title:"Governor tunables"
+		title:"调度器微调"
         }},
 	{ STreeDescriptor:{
 		description:"The various configuration items which are governor-dependent.",

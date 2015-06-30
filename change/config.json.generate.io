@@ -3,11 +3,11 @@ cat << CTAG
 	name:I/O,
 		elements:[
 			{ STitleBar:{
-				title:"I/O Control"
+				title:"I/O 控制"
 			}},
 				{ SSeekBar:{
-					title:"Read-ahead Size",
-					description:"Set the read-ahead size for the internal storage.",
+					title:"预读取缓存大小",
+					description:"设置内部存储器的预读取缓存大小.",
 					unit:" KB",
 					step:128,
 					min:128,
@@ -16,8 +16,8 @@ cat << CTAG
 					action:"ioset queue read_ahead_kb"
 				}},
 				{ SOptionList:{
-					title:"I/O Scheduler",
-					description:"The I/O Scheduler decides how to prioritize and handle I/O requests. More info: <a href='http://timos.me/tm/wiki/ioscheduler'>HERE</a>",
+					title:"I/O 调度策略",
+					description:"I/O 调度器决定了IO的读取时如何划分优先级的. 更多内容请参考: <a href='http://timos.me/tm/wiki/ioscheduler'>HERE</a>",
 					default:`$BB echo $(/res/synapse/actions/bracket-option \`sh $DEVICE DirIOScheduler\`)`,
 					action:"ioset scheduler",
 					values:[
@@ -39,18 +39,18 @@ cat << CTAG
 				`if [ -f "/sys/module/mmc_core/parameters/use_spi_crc" ]; then
 				CRCS=\`bool /sys/module/mmc_core/parameters/use_spi_crc\`
 					$BB echo '{ SPane:{
-						title:"Software CRC control"
+						title:"软件CRC控制"
 					}},
 						{ SCheckBox:{
-							label:"Software CRC control",
-							description:"Enabling software CRCs on the data blocks can be a significant (30%) performance cost. So we allow it to be disabled.",
+							label:"软件CRC校验",
+							description:"使能软件CRC校验损失约30%的性能，所以我们允许被禁止",
 							default:'$CRCS',
 							action:"boolean /sys/module/mmc_core/parameters/use_spi_crc"
 						}},'
 				fi`
 			{ SPane:{
-				title:"General I/O Tunables",
-				description:"Set the internal storage general tunables"
+				title:"通用IO微调选项",
+				description:"设置内部存储器的IO微调选项"
 			}},
 				{ SCheckBox:{
 					description:"Draw entropy from spinning (rotational) storage.",
@@ -59,7 +59,7 @@ cat << CTAG
 					action:"ioset queue add_random"
 				}},
 				{ SCheckBox:{
-					description:"Maintain I/O statistics for this storage device. Disabling will break I/O monitoring apps.",
+					description:"维护存储器的IO数据，禁用此选项将会导致IO监控软件故障.",
 					label:"I/O Stats",
 					default:`$BB cat /sys/block/mmcblk0/queue/iostats`,
 					action:"ioset queue iostats"
@@ -71,8 +71,8 @@ cat << CTAG
 					action:"ioset queue rotational"
 				}},				
 				{ SOptionList:{
-					title:"No Merges",
-					description:"Types of merges (prioritization) the scheduler queue for this storage device allows.",
+					title:"无合并（No Merges）",
+					description:"该存储设备所允许的调度队列的合并（优先级）类型.",
 					default:`$BB cat /sys/block/mmcblk0/queue/nomerges`,
 					action:"ioset queue nomerges",
 					values:{

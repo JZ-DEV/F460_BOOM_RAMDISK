@@ -75,7 +75,7 @@ cat << CTAG
 	}},
 	{ SSeekBar:{
        		title:"熄屏后CPU最大频率",
-		description:"CPU熄屏后最大频率,对4个CPU核心均有效.",
+		description:"熄屏后CPU最大频率,对4个核心均有效.",
 		default:`cat /sys/kernel/msm_limiter/suspend_max_freq`,,
 		action:"generic /sys/kernel/msm_limiter/suspend_max_freq",
 		values:{
@@ -147,7 +147,7 @@ cat << CTAG
 		title:"CPU Boost",
 	}},
 	{ SDescription:{
-		description:"当某些进程从一个高频CPU迁移另一个低频CPU时，CPU boost驱动程序将会在短时间内提升低频CPU的频率至第一个CPU的频率，在下面你可以改变CPU Boost Driver的参数"
+		description:"当某些进程从一个高频CPU迁移另一个低频CPU时，CPU boost驱动程序将会在短时间内提升低频CPU的频率至第一个CPU的频率，在下面你可以改变CPU Boost参数"
 	}},
 	{ SSeekBar:{
 		title:"CPU boost持续时间",

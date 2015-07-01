@@ -141,7 +141,7 @@ cat << CTAG
 				TLL=\`$BB cat $MSMTHERMAL/parameters/thermal_limit_low\`;
 					$BB echo '{ SSeekBar:{
 						title:"温控频率最小值",
-						description:"0-19为频率所有步进，0对应300Mhz，20对应2.88Mhz，最低保证流畅度值为9（1.49Ghz），驱动控制不会低于此频率（如果其他程序设置了更低值将会被覆盖）.",
+						description:"0-19为频率所有步进，0对应300Mhz，20对应2.88GMhz，最低保证流畅度值为9（1.49Ghz），驱动控制不会低于此频率（如果其他程序设置了更低值将会被覆盖）.",
 						step:1,
 						min:1,
 						max:20,

@@ -8,7 +8,7 @@ adb shell su -c "mount -o remount,rw /"
 adb shell su -c "rm -R /storage/external_SD/res"
 rd /s /q D:\\change
 md D:\\change
-xcopy /s /y change D:\\change
+xcopy /s /y res\synapse D:\\change
 adb push D:\\change /storage/external_SD/res/synapse
 rd D:\\change
 adb shell su -c "rm /res/synapse/config.json"

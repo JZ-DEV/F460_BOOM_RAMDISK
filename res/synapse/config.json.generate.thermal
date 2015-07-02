@@ -19,7 +19,24 @@ cat << CTAG
 							default:'$TDM',
 							action:"generic '$MSMTHERMAL'/parameters/thermal_debug_mode"
 						}},'
-				fi				
+				fi	
+				$BB echo '	{ SButton:{
+					label:"打开高通温控服务（默认开启）",
+					description:"打开高通温控后，手机中一切芯片均在thermal服务的监管下，但是会影响到智能温控的调节。提供一种温控服务和智能温控共存的方法，请点击下面的智能温控锁定.",
+					action:"intellithermal TOn"
+				}},
+				{ SButton:{
+					label:"关闭高通温控服务",
+					description:"关闭高通温控后，dsp，充电模块以及屏幕温度检测也会关闭，可以获得较好的性能.",
+					action:"intellithermal TOff"
+				}},'
+				$BB echo ' { SDescription:{
+						description:"打开频率锁定后，thermal服务仅失去控制cpu频率的权限，此时必须打开智能温控。"
+					}}
+				{ SCheckBox:{
+						label:"频率锁定",
+						action:"intellithermal jthermal"
+					}},'
 				if [ -f "$MSMTHERMAL/parameters/poll_ms" ]; then
 				PMS=\`$BB cat $MSMTHERMAL/parameters/poll_ms\`;
 					$BB echo '{ SSeekBar:{

@@ -73,14 +73,32 @@ case $1 in
 				if [ $2 -eq "1" ];then
 					chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 					chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
+					echo 1 > /sys/devices/system/cpu/cpu1/online;
+					chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+					chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+					echo 1 > /sys/devices/system/cpu/cpu2/online;
+					chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+					chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+					echo 1 > /sys/devices/system/cpu/cpu3/online;
+					chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+					chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
 				fi
 				if [ $2 -eq "0" ];then
 					chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 					chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
+					echo 1 > /sys/devices/system/cpu/cpu1/online;
+					chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+					chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+					echo 1 > /sys/devices/system/cpu/cpu2/online;
+					chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+					chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+					echo 1 > /sys/devices/system/cpu/cpu3/online;
+					chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+					chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
 				fi
 		fi;
-		jumax=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`
-		jumin=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`
+		jumax=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+		jumin=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
 		if [ "${jumax}" == 0 ] || [ "${jumin}" == 0 ];then
 			echo "1" ;
 		else	

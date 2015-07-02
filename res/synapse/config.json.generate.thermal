@@ -4,12 +4,26 @@ cat << CTAG
 		elements:[
 			`[ -d "/sys/module/msm_thermal" ] && MSMTHERMAL=/sys/module/msm_thermal;
 			if [ -d "$MSMTHERMAL/parameters" ]; then
+				$BB echo '	{ SPane:{
+					title:"高通温控服务",
+				}},
+				{ SDescription:{
+				description:"高通温控（thermal-engine）作为一个系统服务运行于系统进程中，用来控制cpu，gpu以及dsp，输入电流以及充电和背光亮度，当温度过高时，高通温控可以有效控制整机温度。有时我们不希望高通thermal控制各项频率，可以禁用。如果希望thermal不控制cpu，请打开thermal并且打开频率锁定。"
+					}}
+				{ SCheckBox:{
+						label:"高通温控服务开关",
+						action:"intellithermal thermalserver"
+					}},'
 				if [ -f "$MSMTHERMAL/parameters/intelli_enabled" ]; then
 				ITE=\`bool $MSMTHERMAL/parameters/intelli_enabled\`;
-					$BB echo '{ SCheckBox:{
-							label:"温控总开关",
-							default:'$ITE',
-							action:"boolean '$MSMTHERMAL'/parameters/intelli_enabled"
+					$BB echo '	{ SPane:{
+						title:"intelli智能温控",
+					}},
+				{ SCheckBox:{
+					label:"intelli温控总开关",
+					description:"和高通温控不同，intelli智能温控使用内核控制，由JZ_shminer优化温控核心算法，在高通内核温控的基础上加入了动态温控判断以及极限值，首次在高通处理器上实现温控步控法，代替高通一拉到底的温控算法。",
+					default:'$ITE',
+					action:"boolean '$MSMTHERMAL'/parameters/intelli_enabled"
 						}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/thermal_debug_mode" ]; then
@@ -20,19 +34,9 @@ cat << CTAG
 							action:"generic '$MSMTHERMAL'/parameters/thermal_debug_mode"
 						}},'
 				fi	
-				$BB echo '	{ SButton:{
-					label:"打开高通温控服务（默认开启）",
-					description:"打开高通温控后，手机中一切芯片均在thermal服务的监管下，但是会影响到智能温控的调节。提供一种温控服务和智能温控共存的方法，请点击下面的智能温控锁定.",
-					action:"intellithermal TOn"
-				}},
-				{ SButton:{
-					label:"关闭高通温控服务",
-					description:"关闭高通温控后，dsp，充电模块以及屏幕温度检测也会关闭，可以获得较好的性能.",
-					action:"intellithermal TOff"
-				}},'
 				$BB echo ' { SDescription:{
 						description:"打开频率锁定后，thermal服务仅失去控制cpu频率的权限，此时必须打开智能温控。"
-					}}
+				}}
 				{ SCheckBox:{
 						label:"频率锁定",
 						action:"intellithermal jthermal"

@@ -39,25 +39,29 @@ case "$1" in
 			$BB echo "`$BB cat /sys/class/devfreq/qcom,cache.*/governor`"
 		fi
 	;;
-	DefaultCPUMaxFrequency)
-		while read FREQ TIME; do
-			if [ $FREQ -le "2260000" ]; then
-				MAXCPU=$FREQ;
-			fi;
-		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
-
-		$BB echo $MAXCPU;
+	DefaultCPUFrequency)
+		CPU0_FREQMAX="$(expr `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq` / 1000)MHz";
+		CPU0_FREQMIN="$(expr `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq` / 1000)MHz";
+		echo "CPU最大频率: $CPU0_FREQMAX@nCPU最小频率: $CPU0_FREQMIN"
 	;;
-	DefaultCPUMinFrequency)
-		S=0;
-		while read FREQ TIME; do
-			if [ $FREQ -ge "300000" ] && [ $S -eq "0" ]; then
-				S=1;
-				MINCPU=$FREQ;
-			fi;
-		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
-
-		$BB echo $MINCPU;
+	DefaultCPUCURFrequency)
+		CPU0_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000)MHz";
+		if [ -e /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq ];then
+			CPU1_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq` / 1000)MHz";
+			else 
+			CPU1_FREQCUR=`echo "休眠"`
+		fi
+		if [ -e /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq ];then
+			CPU2_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq` / 1000)MHz";
+			else 
+			CPU2_FREQCUR=`echo "休眠"`
+		fi
+		if [ -e /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq ];then
+			CPU3_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq` / 1000)MHz";
+			else 
+			CPU3_FREQCUR=`echo "休眠"`
+		fi
+		$BB echo "CPU0核心: ${CPU0_FREQCUR}@nCPU1核心: ${CPU1_FREQCUR}@nCPU2核心: ${CPU2_FREQCUR}@nCPU3核心: ${CPU3_FREQCUR}"
 	;;
 	DefaultGPUGovernor)
 		$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"
@@ -203,13 +207,13 @@ case "$1" in
 		CPU_C=`$BB cat /sys/class/thermal/thermal_zone5/temp`;
 		CPU_F=`$BB awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`;
 
-		$BB echo "$CPU_C°C | $CPU_F°F";
+		$BB echo "$CPU_C°C";
 	;;
 	LiveSOCTemperature)
 		SOC_C=`$BB cat /sys/class/thermal/thermal_zone1/temp`;
 		SOC_F=`$BB awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`;
 
-		$BB echo "$SOC_C°C | $SOC_F°F";
+		$BB echo "$SOC_C°C";
 	;;
 	LiveGPUFrequency)
 		GPUFREQ="$((`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";

@@ -2,17 +2,27 @@
 
 cat << CTAG
 {
-	name:状态,
+	name:系统状态,
 		elements:[
 			{ SLiveLabel:{
-				title:"电池温度:",
-				refresh:3000,
-				action:"live BatteryTemperature"
+					title: "显示当前CPU最大最小频率",
+					refresh:2000,
+					action:"live CPU_MAX_MIN_Freq"
+			}},
+			{ SLiveLabel:{
+					title: "显示当前CPU频率",
+					refresh:2000,
+					action:"live CPU_CUR_Freq"
 			}},
 			{ SLiveLabel:{
 				title:"CPU 温度:",
 				refresh:3000,
 				action:"live CPUTemperature"
+			}},
+			{ SLiveLabel:{
+				title:"电池温度:",
+				refresh:3000,
+				action:"live BatteryTemperature"
 			}},
 			{ SLiveLabel:{
 				title:"内存状况:",
@@ -32,19 +42,8 @@ cat << CTAG
 			{ SLiveLabel:{
 				title:"Time in States:",
 				refresh:5000,
-				action:"live Time 0 9"
+				action:"live Time 0 19"
 			}},
-			{ SLiveLabel:{
-				refresh:5000,
-				action:"live Time 10 19"
-			}},
-			`if [ -f "/proc/wakelocks" ]; then
-					echo '{ SLiveLabel:{
-					title:"Kernel Wakelocks (Top 10):",
-					refresh:1000,
-					action:"live WakelocksKernel"
-				}},'
-			fi`
 		]
 }
 CTAG

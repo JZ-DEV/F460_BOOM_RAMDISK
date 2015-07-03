@@ -49,19 +49,48 @@ case "$1" in
 		if [ -e /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq ];then
 			CPU1_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq` / 1000)MHz";
 			else 
-			CPU1_FREQCUR=`echo "休眠"`
+			CPU1_FREQCUR=`echo "休眠"`;
 		fi
 		if [ -e /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq ];then
 			CPU2_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq` / 1000)MHz";
 			else 
-			CPU2_FREQCUR=`echo "休眠"`
+			CPU2_FREQCUR=`echo "休眠"`;
 		fi
 		if [ -e /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq ];then
 			CPU3_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq` / 1000)MHz";
 			else 
-			CPU3_FREQCUR=`echo "休眠"`
+			CPU3_FREQCUR=`echo "休眠"`;
 		fi
-		$BB echo "CPU0核心: ${CPU0_FREQCUR}@nCPU1核心: ${CPU1_FREQCUR}@nCPU2核心: ${CPU2_FREQCUR}@nCPU3核心: ${CPU3_FREQCUR}"
+		$BB echo "CPU0核心: ${CPU0_FREQCUR}@nCPU1核心: ${CPU1_FREQCUR}@nCPU2核心: ${CPU2_FREQCUR}@nCPU3核心: ${CPU3_FREQCUR}";
+	;;
+	LiveThermalstats)
+		Thermal=/sys/module/msm_thermal/parameters;
+		serveron=`pgrep -f "/system/bin/thermal-engine" | wc -l`;
+		intelli_enabled=`$BB cat ${Thermal}/intelli_enabled`;
+		sensor_id=`$BB cat ${Thermal}/sensor_id`;
+		limit_temp_degC=`$BB cat ${Thermal}/limit_temp_degC`;
+		limit_safe_temp_degC=`$BB cat ${Thermal}/limit_safe_temp_degC`;
+		temp_hysteresis_degC=`$BB cat ${Thermal}/temp_hysteresis_degC`;
+		UPT=`expr ${limit_temp_degC} - ${temp_hysteresis_degC}`;
+		temp=`cat /sys/class/thermal/thermal_zone${sensor_id}/temp`;
+		if [ "${temp}" -ge "${limit_temp_degC}" ] && [ ${intelli_enabled} == "Y" ];then
+			DLST="$(expr ${limit_safe_temp_degC} - ${temp})ºC";
+			UT="$(expr ${temp} - ${UPT} )ºC";
+			Thermalstats="已触发智能温控@n距离极限降频还有：${DLST}@n距离升频还有：${UT}";
+			else
+			Thermalstats=`$BB echo "全速运行 目前未触发温控"`;
+		fi
+		if [ ${serveron} == 1 ];then
+			THSS=`$BB echo "高通温控服务运行中"`;
+			else
+			THSS=`$BB echo "高通温控服务已关闭"`;
+		fi;
+		if [ ${intelli_enabled} == "Y" ];then
+			ITED=`$BB echo "intelli智能温控服务运行中"`;
+			else
+			ITED=`$BB echo "intelli智能温控服务已关闭"`;
+		fi;
+		$BB echo "${ITED}@n${THSS}@n${Thermalstats}";
 	;;
 	DefaultGPUGovernor)
 		$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"

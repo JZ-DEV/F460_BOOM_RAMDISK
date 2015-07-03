@@ -18,6 +18,9 @@ case $1 in
 			echo KSM is Disabled.
 		fi
 	;;
+	Thermalstats)
+		$BB echo `sh $DEVICE LiveThermalstats`;
+	;;
 	BatteryTemperature)
 		$BB echo `sh $DEVICE LiveBatteryTemperature`;
 	;;

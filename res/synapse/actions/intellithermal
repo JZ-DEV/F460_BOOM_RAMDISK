@@ -68,9 +68,12 @@ if [ "$1" == "freq" ]; then
 fi;
 
 case $1 in
-	jthermal)
+	ITE)
+		Thermal=/sys/module/msm_thermal/parameters;
+		intelli_enabled=`$BB cat ${Thermal}/intelli_enabled`;
 		if [[ ! -z "$2" ]]; then
 				if [ $2 -eq "1" ];then
+					echo "Y" > ${Thermal}/intelli_enabled;
 					chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 					chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
 					echo 1 > /sys/devices/system/cpu/cpu1/online;
@@ -84,6 +87,7 @@ case $1 in
 					chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
 				fi
 				if [ $2 -eq "0" ];then
+					echo "N" > ${Thermal}/intelli_enabled;
 					chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 					chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
 					echo 1 > /sys/devices/system/cpu/cpu1/online;
@@ -97,13 +101,18 @@ case $1 in
 					chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
 				fi
 		fi;
-		jumax=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-		jumin=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-		if [ "${jumax}" == 0 ] || [ "${jumin}" == 0 ];then
-			echo "1" ;
-		else	
-			echo "0" ;
+		if [ ${intelli_enabled} == "Y" ];then
+			echo "1";
+		else
+			echo "0";
 		fi
+		#jumax=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+		#jumin=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+		#if [ "${jumax}" == 0 ] || [ "${jumin}" == 0 ];then
+			#echo "1" ;
+		#else	
+			#echo "0" ;
+		#fi
 	;;
 	thermalserver)
 		if [[ ! -z "$2" ]]; then

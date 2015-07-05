@@ -71,26 +71,29 @@ case "$1" in
 		limit_temp_degC=`$BB cat ${Thermal}/limit_temp_degC`;
 		limit_safe_temp_degC=`$BB cat ${Thermal}/limit_safe_temp_degC`;
 		temp_hysteresis_degC=`$BB cat ${Thermal}/temp_hysteresis_degC`;
-		UPT=`expr ${limit_temp_degC} - ${temp_hysteresis_degC}`;
 		temp=`cat /sys/class/thermal/thermal_zone${sensor_id}/temp`;
-		if [ "${temp}" -ge "${limit_temp_degC}" ] && [ ${intelli_enabled} == "Y" ];then
-			DLST="$(expr ${limit_safe_temp_degC} - ${temp})ºC";
-			UT="$(expr ${temp} - ${UPT} )ºC";
-			Thermalstats="已触发智能温控@n距离极限降频还有：${DLST}@n距离升频还有：${UT}";
+		if [ ${intelli_enabled} == "Y" ];then
+			UPT=`expr ${limit_temp_degC} - ${temp_hysteresis_degC}`;
+			if [ "${temp}" -gt "${UPT}" ];then
+				UT="升频偏移值：$(expr ${temp} - ${UPT} )ºC";
+				else
+				UT=`echo "设备全速运行！"`;
+			fi
+			if [ "${temp}" -ge "${limit_temp_degC}" ];then
+				DLST="$(expr ${limit_safe_temp_degC} - ${temp})ºC";
+				Thermalstats="已触发智能温控@n距离极限降频还有：${DLST}";
 			else
-			Thermalstats=`$BB echo "全速运行 目前未触发温控"`;
+				Thermalstats=`$BB echo "目前未触发温控@nIntelli温控监视中"`;
+			fi
+		else
+			Thermalstats=`$BB echo "Intelli智能温控未运行"`;
 		fi
 		if [ ${serveron} == 1 ];then
 			THSS=`$BB echo "高通温控服务运行中"`;
 			else
 			THSS=`$BB echo "高通温控服务已关闭"`;
 		fi;
-		if [ ${intelli_enabled} == "Y" ];then
-			ITED=`$BB echo "intelli智能温控服务运行中"`;
-			else
-			ITED=`$BB echo "intelli智能温控服务已关闭"`;
-		fi;
-		$BB echo "${ITED}@n${THSS}@n${Thermalstats}";
+		$BB echo "${THSS}@n${Thermalstats}@n${UT}";
 	;;
 	DefaultGPUGovernor)
 		$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"

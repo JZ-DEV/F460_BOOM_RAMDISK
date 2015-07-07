@@ -79,11 +79,12 @@ case "$1" in
 				else
 				UT=`echo "设备全速运行！"`;
 			fi
+			UTS="@n${UT}"
 			if [ "${temp}" -ge "${limit_temp_degC}" ];then
 				DLST="$(expr ${limit_safe_temp_degC} - ${temp})ºC";
-				Thermalstats="已触发智能温控@n距离极限降频还有：${DLST}@n${UT}";
+				Thermalstats="已触发智能温控@n距离极限降频还有：${DLST}";
 			else
-				Thermalstats=`$BB echo "目前未触发温控@nIntelli温控监视中@n${UT}"`;
+				Thermalstats=`$BB echo "目前未触发温控@nIntelli温控监视中"`;
 			fi
 		else
 			Thermalstats=`$BB echo "Intelli智能温控未运行"`;
@@ -93,7 +94,7 @@ case "$1" in
 			else
 			THSS=`$BB echo "高通温控服务已关闭"`;
 		fi;
-		$BB echo "${THSS}@n${Thermalstats}";
+		$BB echo "${THSS}@n${Thermalstats}${UTS}";
 	;;
 	DefaultGPUGovernor)
 		$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"

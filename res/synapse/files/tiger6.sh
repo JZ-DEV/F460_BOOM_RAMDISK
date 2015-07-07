@@ -125,9 +125,6 @@ case "$1" in
 	DirGPUNumPwrLevels)
 		$BB echo "/sys/class/kgsl/kgsl-3d0/num_pwrlevels";
 	;;
-	#DirGPUPolicy)
-	#	$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/policy";
-	#;;
 	DirIOReadAheadSize)
 		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
@@ -157,15 +154,6 @@ case "$1" in
 			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
 		done;
 	;;
-	HasBootloader)
-		$BB echo "0";
-	;;
-	HasHeadphonePowerAmp)
-		$BB echo "2";
-	;;
-	HasTamperFlag)
-		$BB echo "1";
-	;;
 	IOSchedulerList)
 		for IOSCHED in `$BB cat /sys/block/mmcblk0/queue/scheduler | $BB sed -e 's/\]//;s/\[//'`; do
 			$BB echo "\"$IOSCHED\",";
@@ -178,38 +166,6 @@ case "$1" in
 
 		$BB echo "$BAT_C°C | $BAT_F°F@nHealth: $BAT_H";
 	;;
-	#LiveBootloader)
-		#version=`getprop ro.bootloader`;
-
-		#block=/dev/block/platform/msm_sdcc.1/by-name/misc;
-		#offset=16400;
-		#locked=00;
-		#unlocked=01;
-		#tamper=16404;
-		#false=00;
-		#true=01;
-
-		#lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
-		#tamperstate=`$BB dd ibs=1 count=1 skip=$tamper if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
-
-		#if [ $lockstate == $locked ]; then
-			#state="Locked";
-		#elif [ $lockstate == $unlocked ]; then
-			#state="Unlocked";
-		#else
-			#state="Unknown";
-		#fi;
-
-		#if [ $tamperstate == $false ]; then
-			#tamper="False";
-		#elif [ $tamperstate == $true ]; then
-			#tamper="True";
-		#else
-			#tamper="Unknown";
-		#fi;
-
-		#$BB echo "Version: $version";
-	#;;
 	LiveCPUL2Frequency)
 		if [ -d /sys/class/devfreq/qcom,cache.* ]; then
 			CPUL2FREQ="$((`$BB cat /sys/class/devfreq/qcom,cache.*/cur_freq` / 1000000)) MHz";
@@ -221,19 +177,6 @@ case "$1" in
 			CPUBWFREQ="$((`$BB cat /sys/class/devfreq/qcom,cpubw.*/cur_freq` / 1000000)) MHz";
 		fi
 		$BB echo "$CPUBWFREQ";
-	;;
-	LiveCPUFrequency)
-		CPU0=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2> /dev/null`;
-		CPU1=`$BB cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq 2> /dev/null`;
-		CPU2=`$BB cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq 2> /dev/null`;
-		CPU3=`$BB cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq 2> /dev/null`;
-
-		if [ -z "$CPU0" ]; then CPU0="Offline"; else CPU0="$((CPU0 / 1000)) MHz"; fi;
-		if [ -z "$CPU1" ]; then CPU1="Offline"; else CPU1="$((CPU1 / 1000)) MHz"; fi;
-		if [ -z "$CPU2" ]; then CPU2="Offline"; else CPU2="$((CPU2 / 1000)) MHz"; fi;
-		if [ -z "$CPU3" ]; then CPU3="Offline"; else CPU3="$((CPU3 / 1000)) MHz"; fi;
-
-		$BB echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";
 	;;
 	LiveCPUTemperature)
 		CPU_C=`$BB cat /sys/class/thermal/thermal_zone5/temp`;
@@ -393,46 +336,4 @@ case "$1" in
 			$BB echo "\"$TCPCC\",";
 		done;
 	;;
-	#ToggleBootloader)
-		#block=/dev/block/platform/msm_sdcc.1/by-name/misc;
-		#offset=16400;
-		#locked=00;
-		#unlocked=01;
-		#lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
-
-		#if [ $lockstate == $locked ]; then
-			#$BB echo "Setting state to Unlocked...";
-			#setstate=$unlocked;
-		#elif [ $lockstate == $unlocked ]; then
-			#$BB echo "Setting state to Locked...";
-			#setstate=$locked;
-		#else
-			#$BB echo "State is Unknown. No changes were made.";
-		#fi;
-
-		#if [ -n "$setstate" ]; then
-			#$BB echo -ne "\x$setstate" | $BB dd obs=1 count=1 seek=$offset of=$block 2> /dev/null;
-		#fi;
-	#;;
-	#ToggleTamper)
-		#block=/dev/block/platform/msm_sdcc.1/by-name/misc;
-		#offset=16404;
-		#false=00;
-		#true=01;
-		#tamperstate=`$BB dd ibs=1 count=1 skip=$offset obs=1 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
-
-		#if [ $tamperstate == $true ]; then
-			#$BB echo "Setting tamper flag to False...";
-			#setstate=$false;
-		#elif [ $tamperstate == $false ]; then
-			#$BB echo "Setting tamper flag to True...";
-			#setstate=$true;
-		#else
-			#"Tamper is Unknown. No changes were made.";
-		#fi;
-
-		#if [ -n "$setstate" ]; then
-			#$BB echo -ne "\x$setstate" | $BB dd obs=1 count=1 seek=$offset of=$block 2> /dev/null;
-		#fi;
-	#;;
 esac;

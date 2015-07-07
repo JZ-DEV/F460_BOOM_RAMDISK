@@ -25,6 +25,16 @@ cat << CTAG
 					action:"live CPU_CUR_Freq"
 			}},
 			{ SLiveLabel:{
+				title:"当前CPU调速器",
+				refresh:8000,
+				action:"live DefaultCPUGovernor"
+			}},
+			{ SLiveLabel:{
+				title:"当前CPU热插拔驱动",
+				refresh:8000,
+				action:"live CPU_HOTPLUG"
+			}},
+			{ SLiveLabel:{
 				title:"CPU 温度:",
 				refresh:3000,
 				action:"live CPUTemperature"
@@ -45,17 +55,17 @@ cat << CTAG
 				action:"live Memory"
 			}},
 			{ SLiveLabel:{
-				title:"Uptime:",
+				title:"时间状态:",
 				refresh:5000,
 				action:"live UpTime"
 			}},
 			{ SLiveLabel:{
-				title:"Unused States:",
+				title:"未使用频率:",
 				refresh:5000,
 				action:"live UnUsed"
 			}},
 			{ SLiveLabel:{
-				title:"Time in States:",
+				title:"各频率时间:",
 				refresh:5000,
 				action:"live Time 0 19"
 			}},

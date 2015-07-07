@@ -336,4 +336,21 @@ case "$1" in
 			$BB echo "\"$TCPCC\",";
 		done;
 	;;
+	LiveDefaultCPUGovernor)
+		cpugov_show=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor);
+		echo "$cpugov_show";
+	;;
+	LiveCPU_HOTPLUG)
+		if [ "$(cat /sys/kernel/alucard_hotplug/hotplug_enable)" -eq "1" ]; then
+			ALUCARD_HOTPLUG=活动;
+		else
+			ALUCARD_HOTPLUG=关闭;
+		fi;
+		if [ "$(cat /sys/kernel/msm_mpdecision/conf/enabled)" -eq "1" ]; then
+			MSM_MPDECISION=活动;
+		else
+			MSM_MPDECISION=关闭;
+		fi;
+		echo "Alucard HotPlug: $ALUCARD_HOTPLUG@nMSM BRICKD: $MSM_MPDECISION"
+	;;
 esac;

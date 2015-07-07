@@ -54,4 +54,10 @@ case $1 in
 	WakelocksKernel)
 		$BB echo `sh $DEVICE LiveWakelocksKernel`;
 	;;
+	DefaultCPUGovernor)
+		$BB echo `sh $DEVICE LiveDefaultCPUGovernor`;
+	;;
+	CPU_HOTPLUG)
+		$BB echo `sh $DEVICE LiveCPU_HOTPLUG`;
+	;;
 esac

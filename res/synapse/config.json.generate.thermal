@@ -52,14 +52,14 @@ cat << CTAG
 						refresh:1000,
 						action:"live Thermalzone"
 					}},
-					{ SOptionList:{
+					{	SSeekBar:{
 						title:"温控传感器",
-						description:"智能温度所使用的传感器.0为处理器表面传感器，5-8为四个CPU核心内部传感器。默认为5，优先选择温度变化最块的传感器.",
-						default:'$SID',
+						description:"智能温度所使用的传感器.0为处理器表面传感器，5-8为四个CPU核心内部传感器。默认为5，优先选择温度变化最块的传感器。",
+						unit:"号",
 						action:"generic '$MSMTHERMAL'/parameters/sensor_id",
-						values:{
-							0:"0", 5:"5", 6:"6", 7:"7", 8:"8"
-						}
+						values:[
+							0, 5, 6, 7, 8,
+						]
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/limit_temp_degC" ]; then
@@ -192,13 +192,12 @@ cat << CTAG
 				fi
 				if [ -f "$MSMTHERMAL/parameters/core_control_mask" ]; then
 				CCM=\`$BB cat $MSMTHERMAL/parameters/core_control_mask\`;
-					$BB echo '	{ SOptionList:{
+					$BB echo '	{	SSeekBar:{
 						title:"热插拔保留核心数",
-						description:"当触发了温控热插拔后，驱动保留最小可打开的核心数（可被其他温控服务以及热插拔驱动覆盖）.",
-						default:'$CCM',
+						description:"当触发了温控热插拔后，驱动保留最小可打开的核心数（可被其他温控服务以及热插拔驱动覆盖）。",
 						action:"generic '$MSMTHERMAL'/parameters/core_control_mask",
 						values:{
-							0:"全部核心在线", 12:"强行关闭2、3核心", 8:"强行关闭3核心",  14:"强行关闭1、2、3核心"
+							0:"保留所有",  8:"关闭一个", 12:"关闭两个", 14:"关闭三个"
 						}
 					}},'
 				fi

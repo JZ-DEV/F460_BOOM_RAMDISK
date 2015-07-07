@@ -4,6 +4,16 @@ cat << CTAG
 {
 	name:系统状态,
 		elements:[
+			{ SPane:{
+				title:"Linux版本",
+				description:"`$BB cat /proc/version`"
+			}},
+			{ SPane:{
+				description:"内核版本1.0.0"
+			}},
+			{ SPane:{
+				title:"系统信息",
+			}},
 			{ SLiveLabel:{
 					title: "显示当前CPU最大最小频率",
 					refresh:2000,

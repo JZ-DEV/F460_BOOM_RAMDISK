@@ -351,6 +351,10 @@ case "$1" in
 		else
 			MSM_MPDECISION=关闭;
 		fi;
-		echo "Alucard HotPlug: $ALUCARD_HOTPLUG@nMSM BRICKD: $MSM_MPDECISION"
+		$BB echo "Alucard HotPlug: $ALUCARD_HOTPLUG@nMSM BRICKD: $MSM_MPDECISION"
+	;;
+	LivePVSbin)
+		pvs_bin=`$BB cat /sys/devices/soc0/pvs_bin`;
+	$BB echo "PVS:${pvs_bin}";
 	;;
 esac;

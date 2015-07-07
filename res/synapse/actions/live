@@ -60,4 +60,7 @@ case $1 in
 	CPU_HOTPLUG)
 		$BB echo `sh $DEVICE LiveCPU_HOTPLUG`;
 	;;
+	PVSbin)
+		$BB echo `sh $DEVICE LivePVSbin`;
+	;;
 esac

@@ -127,9 +127,9 @@ case $1 in
 		fi;
 		serveron=`pgrep -f "/system/bin/thermal-engine" | wc -l`	
 		if [ ${serveron} == 1 ];then
-			echo 1;
+			echo "1";
 		else
-			echo 0;
+			echo "0";
 		fi;
 esac;
 

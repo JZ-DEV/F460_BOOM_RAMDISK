@@ -81,7 +81,7 @@ cat << CTAG
 				}},
 			{ SPane:{
 				title:"一般操作",
-				description:"To update/refresh lists, select Restart Synapse below. To clear data, select Clear Synapse Data (fixes most common issues)."
+				description:"如果要更新文件列表，点击重启Synpase。如果程序不正常，清空Synapse数据可以修复一些未知问题."
 			}},
 				{ SButton:{
 					label:"重启 Synapse",

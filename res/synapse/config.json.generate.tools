@@ -1,66 +1,43 @@
 cat << CTAG
 {
-	name:TOOLS,
+	name:实用工具,
 		elements:[
-			`if [ "\`sh $DEVICE HasBootloader\`" == "1" ]; then
-				$BB echo '{ SLiveLabel:{
-					refresh:0,
-					title:"Bootloader version",
-					action:"live Bootloader"
-				}},'
-			fi`
 			{ SPane:{
-				title:"SELinux Status",
-				description:"Allows you to change your SELinux (Security-Enhanced Linux) Status from Enforcing (policy is enforced) to Permissive (prints warnings instead of enforcing).",
+				title:"SELinux 状态",
+				description:"更改 SELinux (安全加强 Linux) 状态，更改 Enforcing (实施策略) 到 Permissive (只警告，而不是强制执行)。",
 			}},
 				{ SOptionList:{
 					default:`getenforce`,
 					action:"devtools selinux",
-					values:[ Enforcing, Permissive
-					],
+					values:[ Enforcing, Permissive ],
 				}},
 			`if [ -f "/sys/module/selinux/parameters/force_audit" ]; then
 				FAUDIT=\`bool /sys/module/selinux/parameters/force_audit\`;
 					$BB echo '{ SCheckBox:{
-						label:"Force Audit",
-						description:"Enable for debugging SELinux driver.",
+						label:"强制审核",
+						description:"启用SELinux的调试驱动程序。",
 						default:'$FAUDIT',
 						action:"boolean /sys/module/selinux/parameters/force_audit"
 					}},'
 			fi`
-			`if [ -f "/data/data/com.android.providers.settings/databases/settings.db_0" ]; then
-				$BB echo '{ SPane:{
-					title:"Preferred Network Mode",
-					description:"Use GSM_auto or CDMA_auto (depending on your network) to reduce the msm_hsic_host wakelock and save battery. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
-				}},
-					{ SOptionList:{
-						default:0,
-						action:"sqlite PreferredNetworkMode",
-						values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
-							7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA", 
-							13:"TD-SCDMA_only", 14:"TD-SCDMA_WCDMA", 15:"TD-SCDMA_LTE", 16:"TD-SCDMA_GSM", 17:"TD-SCDMA_GSM_LTE", 18:"TD-SCDMA_GSM_WCDMA",
-							19:"TD-SCDMA_WCDMA_LTE", 20:"TD-SCDMA_GSM_WDCMA_LTE", 21:"TD-SCDMA_GSM_WCDMA_CDMA_EvDo", 22:"TD-SCDMA_LTE_CDMA_EvDo_GSM_WCDMA"
-						},
-					}},'
-			fi`
 			{ SPane:{
-				title:"Advanced Tools"
+				title:"高级工具"
 			}},
 				{ SDescription:{
-					description:"Use this button to defrag/reindex all databases found in /data & /sdcard, this increases database read/write performance. NOTE: This process can take from 1-2 minutes."
+					description:"以下按钮将 整理/重索引 DATA 分区的数据库，提高数据读写性能，注意：此操作需时 1-2分钟。"
 				}},
 				{ SButton:{
-					label:"Optimize Databases",
+					label:"优化数据库",
 					action:"devtools optimizedb"
 				}},
 			{ SPane:{
-				title:"Log Creation"
+				title:"保存日志"
 			}},
 				`if [ -f "/sys/module/logger/parameters/enabled" ]; then
 				LOGMODE=\`$BB cat /sys/module/logger/parameters/enabled\`
 					$BB echo '{ SOptionList:{
-						title:"Log Mode",
-						description:"Allows you to toggle the log mode.",
+						title:"Logcat Mode",
+						description:"Allows you to toggle the logcat mode.",
 						default:'$LOGMODE',
 						action:"generic /sys/module/logger/parameters/enabled",
 						values:{
@@ -80,95 +57,51 @@ cat << CTAG
 						}
 					}},'
 				fi`
-			{ SDescription:{
-				description:"Save the logcat (App/system debug), dmesg (active kernel output) or last_kmsg (same as dmesg but from the last shutdown). Submit last_kmsg whenever you face issue (random reboot, freeze) and rebooting kernel resolved that issue."
-			}},
+				`if [ -f "/sys/kernel/printk_mode/printk_mode" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Kernel Logger",
+						description:"Allows you to toggle dmesg kernel logging.",
+						action:"printk /sys/kernel/printk_mode/printk_mode",
+						values:{
+							0:"Disabled", 1:"Enabled"
+						}
+					}},'
+				fi`
 				{ SButton:{
-					label:"Save logcat",
+					label:"保存安卓日至",
 					action:"devtools logcat"
 				}},
 				{ SButton:{
-					label:"Save dmesg",
+					label:"保存当前内核日至",
 					action:"devtools dmesg"
 				}},
 				{ SButton:{
-					label:"Save last_kmsg",
+					label:"保存上次内核日至",
 					action:"devtools kmsg"
 				}},
 			{ SPane:{
-				title:"Kernel"
-			}},
-				{ SGeneric:{
-					title:"Kernel Name",
-					default:"None",
-					action:"generic /res/synapse/files/bck_prof",
-				}},
-				{ SDescription:{
-					description:"First set a name above and apply. After this you can press the Backup Current Kernel button below."
-				}},
-				{ SButton:{
-					label:"Backup Current Kernel",
-					action:"restorebackup keepboot `sh $DEVICE DirKernelIMG`",
-					notify:[
-						{
-							on:APPLY,
-							do:[ REFRESH, APPLY ],
-							to:"generic /res/synapse/files/bck_prof"
-						}
-					]
-				}},
-				{ SOptionList:{
-					title:"Selected Image",
-					description:"Choose the image you want and apply your choice in Synapse before using the action buttons below.",
-					action:"restorebackup pickboot",
-					default:"None",
-					values:[ "None",
-						`for IMG in \`/res/synapse/actions/restorebackup listboot\`; do
-							echo "\"$IMG\","
-						done`
-					]
-				}},
-				{ SButton:{
-					label:"Restore Selected Kernel",
-					action:"restorebackup flashboot `sh $DEVICE DirKernelIMG`"
-				}},
-				{ SButton:{
-					label:"Delete Selected Kernel",
-					action:"restorebackup delboot",
-					notify:[
-						{ on:APPLY,
-						do:[ RESET, REFRESH ],
-						to:"restorebackup pickboot"
-						}
-					]
-				}},
-			{ SPane:{
-				title:"General Actions",
+				title:"一般操作",
 				description:"To update/refresh lists, select Restart Synapse below. To clear data, select Clear Synapse Data (fixes most common issues)."
 			}},
 				{ SButton:{
-					label:"Restart Synapse",
+					label:"重启 Synapse",
 					action:"restorebackup restart"
 				}},
 				{ SButton:{
-					label:"Clear Synapse Data",
+					label:"清除 Synapse 数据",
 					action:"devtools cleardata"
 				}},
 			{ STitleBar:{
-				title:"Reboot"
+				title:"重新启动"
 			}},
 				{ SButton:{
-					label:"Reboot Device",
+					label:"重启设备",
 					action:"devtools reboot"
 				}},
 				{ SButton:{
-					label:"Reboot to Recovery",
+					label:"恢复模式",
 					action:"devtools reboot recovery"
 				}},
-				{ SButton:{
-					label:"Reboot to Bootloader",
-					action:"devtools reboot bootloader"
-				}}
 		]
 }
 CTAG

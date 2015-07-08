@@ -35,7 +35,7 @@ case $1 in
 			/res/synapse/files/sqlite3 $i 'REINDEX;' 2> /dev/null;
 		done;
 
-		$BB echo "Databases have been optimized.";
+		$BB echo "数据库优化完毕.";
 	;;
 	logcat)
 		saved="$LOGS/logcat-$TIMESTAMP.txt";
@@ -52,15 +52,15 @@ case $1 in
 		$BB dmesg > $saved;
 	;;
 	kmsg)
-		kmsg=/proc/last_kmsg;
+		kmsg=/mnt/pstore/console-ramoops-0;
 		if [ -f $kmsg ]; then
-			saved="$LOGS/last_kmsg-$TIMESTAMP.txt";
+			saved="$LOGS/last_kernel_log-$TIMESTAMP.txt";
 			[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
 			$BB chmod 755 $LOGS;
-
+			
 			$BB cp -f $kmsg $saved;
 		else
-			$BB echo "$kmsg not found.";
+			$BB echo "$kmsg 没有找到.";
 		fi;
 	;;
 	reboot)
@@ -78,6 +78,6 @@ esac;
 
 case $1 in
 	logcat|dmesg|kmsg)
-		$BB echo "Logfile saved to $saved";
+		$BB echo "文件保存至 $saved";
 	;;
 esac;

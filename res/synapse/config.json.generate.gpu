@@ -94,13 +94,13 @@ cat << CTAG
 						}},'
 							$BB echo '{ SGeneric:{
 							title:"降低阈值",
-							description:"增加这个值idler开始降频的可能性越小，反之增大，越小越省电。. ",
+							description:"增加这个值idler开始降频的可能性越小，反之增大，越小越省电。 ",
 							default:'cat $IDLELOC/adreno_idler_downdifferential',
 							action:"adreno_idler '$IDLELOC'/adreno_idler_downdifferential"
 						}},'
 							$BB echo '{ SGeneric:{
 							title:"Idle 等待时间",
-							description:"当负载降低后，idler将进入降频状态的等待时间，这个值越低，开始降频的延迟越短，越省电。',
+							description:"当负载降低后，idler将进入降频状态的等待时间，这个值越低，开始降频的延迟越短，越省电。",
 							action:"adreno_idler '$IDLELOC'/adreno_idler_idlewait"
 						}},'
 							$BB echo '{ SGeneric:{
@@ -109,7 +109,7 @@ cat << CTAG
 							default:'cat $IDLELOC/adreno_idler_idleworkload',
 							action:"adreno_idler '$IDLELOC'/adreno_idler_idleworkload"
 						}},'
-				fi`
+			fi`
 		]
 }
 CTAG

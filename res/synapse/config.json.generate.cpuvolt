@@ -30,7 +30,7 @@ cat << CTAG
 			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
 				$BB echo '{ SPane:{
 					title:"CPU频率电压调整",
-					description:"降低CPU电压可以减少发热和省电. 太低的电压会导致系统运行不稳定,当超频时则需要升高相应频率的电压."
+					description:"降低CPU电压可以减少发热和省电. 太低的电压会导致系统运行不稳定,当超频时则需要升高相应频率的电压.",
 				}},'
 					while read CPUFREQ VOLT; do
 					CPUFREQ=\`$BB echo $CPUFREQ | $BB sed "s/://"\`

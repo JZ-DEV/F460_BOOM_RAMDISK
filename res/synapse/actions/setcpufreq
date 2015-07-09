@@ -1,0 +1,151 @@
+BB=busybox;
+
+hotplugcheck()
+{	
+	alucard=/sys/kernel/alucard_hotplug/hotplug_enable;
+	brickd=/sys/kernel/msm_mpdecision/conf/enabled;
+	aluon=`$BB cat ${alucard}`;
+	brickdon=`$BB cat ${brickd}`;
+	if [ "${aluon}" == 1 ];then
+		hotplugon=${alucard};
+	elif [ "${brickdon}" == 1 ];then
+		hotplugon=${brickd};
+	else
+		hotplugon="/dev/null";
+	fi
+}
+
+hotplugset()
+{
+	if [ $1 == "1" ];then
+		echo 1 > ${hotplugon};
+	fi
+	
+	if [ $1 == "0" ];then
+		echo 0 > ${alucard};
+		echo 0 > ${brickd};
+	fi
+}
+
+getonline()
+{
+	echo 1 > /sys/devices/system/cpu/cpu1/online;
+	echo 1 > /sys/devices/system/cpu/cpu2/online;
+	echo 1 > /sys/devices/system/cpu/cpu3/online;
+}
+
+checkrw() 
+{	
+	hotplugset 0;
+	getonline;
+	jumax0=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumin0=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumax1=`ls -l /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumin1=`ls -l /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumax2=`ls -l /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumin2=`ls -l /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumax3=`ls -l /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	jumin3=`ls -l /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	if [ "${jumax0}" == 0 ] || [ "${jumin0}" == 0 ] || [ "${jumax1}" == 0 ] || [ "${jumin1}" == 0 ] || [ "${jumax2}" == 0 ] || [ "${jumin2}" == 0 ] || [ "${jumax3}" == 0 ] || [ "${jumin3}" == 0 ];then
+		CPUFREQSETCHECK=1 ;
+	fi
+}
+
+lockfreq()
+{	
+	chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+	chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+}
+
+unlockfreq()
+{	
+	chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+	chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+}
+
+changemax()
+{
+	cpu_max_freq=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq`;
+	echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+	echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+	echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+}
+
+changemin()
+{
+	cpu_min_freq=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq`;
+	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+}
+
+if [ -f $1 ];then
+	if [[ ! -z $2 ]]; then
+		if [ "$1" == "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" ];then
+			hotplugcheck;
+			checkrw;
+			if [ ${CPUFREQSETCHECK} == "1" ];then
+				unlockfreq;
+				echo ${2} > ${1};
+				changemax;
+				lockfreq;
+				hotplugset 1;
+			else
+				echo ${2} > ${1};
+				changemax;
+				hotplugset 1;
+			fi
+		fi
+		if [ "$1" == "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" ];then
+			hotplugcheck;
+			checkrw;
+			if [ ${CPUFREQSETCHECK} == "1" ];then
+				unlockfreq;
+				echo ${2} > ${1};
+				changemin;
+				lockfreq;
+				hotplugset 1;
+			else
+				echo ${2} > ${1};
+				changemin;
+				hotplugset 1;
+			fi
+		fi
+	fi
+	if [ $1 == "fixcpufreq" ];then
+		hotplugcheck;
+		checkrw;
+		if [ ${CPUFREQSETCHECK} == "1" ];then
+			unlockfreq;
+			changemax;
+			lockfreq;
+			hotplugset 1;
+		else
+			changemax;
+			hotplugset 1;
+		fi
+		if [ ${CPUFREQSETCHECK} == "1" ];then
+			unlockfreq;
+			changemin;
+			lockfreq;
+			hotplugset 1;
+		else
+			changemin;
+			hotplugset 1;
+		fi
+	else
+		echo `cat $1`;
+	fi
+fi

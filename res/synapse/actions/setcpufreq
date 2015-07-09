@@ -166,7 +166,7 @@ if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
 			hotplugset 1;
 		fi
-		$BB echo "频率以及调速器已校准。";
+		$BB echo "频率以及调速器已校准";
 	else
 		echo `cat $1`;
 	fi

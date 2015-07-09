@@ -92,22 +92,32 @@ cat << CTAG
 							default:'$IDLER',
 							action:"boolean /sys/module/adreno_idler/parameters/adreno_idler_active"
 						}},'
-							$BB echo '{ SGeneric:{
+							$BB echo '{ SSeekBar:{
 							title:"降低阈值",
 							description:"增加这个值idler开始降频的可能性越小，反之增大，越小越省电。 ",
-							default:'cat $IDLELOC/adreno_idler_downdifferential',
-							action:"adreno_idler '$IDLELOC'/adreno_idler_downdifferential"
+							default:'\`cat $IDLELOC/adreno_idler_downdifferential\`',
+							action:"generic '$IDLELOC'/adreno_idler_downdifferential",
+							min:0,
+							max:100,
+							step:1
 						}},'
-							$BB echo '{ SGeneric:{
+							$BB echo '{ SSeekBar:{
 							title:"Idle 等待时间",
 							description:"当负载降低后，idler将进入降频状态的等待时间，这个值越低，开始降频的延迟越短，越省电。",
-							action:"adreno_idler '$IDLELOC'/adreno_idler_idlewait"
+							default:'\`cat $IDLELOC/adreno_idler_idlewait\`',
+							action:"generic '$IDLELOC'/adreno_idler_idlewait",
+							min:0,
+							max:100,
+							step:1
 						}},'
-							$BB echo '{ SGeneric:{
+							$BB echo '{ SSeekBar:{
 							title:"Idle 积极程度",
 							description:"这个值越高，GPU能越弱，越省电，idler会更多的降低gpu频率。",
-							default:'cat $IDLELOC/adreno_idler_idleworkload',
-							action:"adreno_idler '$IDLELOC'/adreno_idler_idleworkload"
+							default:'\`cat $IDLELOC/adreno_idler_idleworkload\`',
+							action:"generic '$IDLELOC'/adreno_idler_idleworkload",
+							min:0,
+							max:10000,
+							step:1000
 						}},'
 			fi`
 		]

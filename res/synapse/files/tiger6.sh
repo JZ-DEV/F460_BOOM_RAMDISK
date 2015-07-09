@@ -118,10 +118,10 @@ case "$1" in
 		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor";
 	;;
 	DirGPUMaxFrequency)
-		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/max_freq";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/max_pwrlevel";
 	;;
 	DirGPUMinPwrLevel)
-		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/min_freq";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/min_pwrlevel";
 	;;
 	DirGPUNumPwrLevels)
 		$BB echo "/sys/class/kgsl/kgsl-3d0/num_pwrlevels";

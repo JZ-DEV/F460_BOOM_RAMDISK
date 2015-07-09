@@ -1,91 +1,51 @@
 cat << CTAG
 {
-	name:CPU设置,
-		elements:[
-			{ SPane:{
-					title:"CPU当前频率:"
-				}},
-				{ SLiveLabel:{
-					refresh:1000,
-					action:"live CPU_CUR_Freq"
-			}},
-			{ STitleBar:{
-				title:"CPU频率调节"
-			}},
-				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" ]; then
-					$BB echo '{ SSeekBar:{
-						title:"CPU 最高频率 (全局)",
-						description:"设定 CPU 负载时的最高工作频率。",
-						default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq\`',
-						action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-						values:{'
-							sh $DEVICE CPUFrequencyList
-						$BB echo '}
-					}},'
-				fi`
-				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" ]; then
-					$BB echo '{ SSeekBar:{
-						title:"CPU 最低频率 (全局)",
-						description:"设定 CPU 负载时的最低工作频率。。",
-						default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq\`',
-						action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",
-						values:{'
-							sh $DEVICE CPUFrequencyList
-						$BB echo '}
-					}},'
-				fi`
-				`if [ -d "/sys/module/cpu_boost/parameters" ]; then
-					$BB echo '{ SPane:{
-							title:"CPU 优化频率驱动"
-						}},'
-					if [ -f "/sys/module/cpu_boost/parameters/cpu_boost" ]; then
-					CPUBOOST=\`$BB cat /sys/module/cpu_boost/parameters/cpu_boost\`;
-						$BB echo '{ SCheckBox:{
-							label:"启用",
-							description:"替代高通 MPDecision 的驱动. 由 Cyanogenmod 提供。",
-							default:'$CPUBOOST',
-							action:"generic /sys/module/cpu_boost/parameters/cpu_boost"
-						}},'
-					fi
-					if [ -f "/sys/module/cpu_boost/parameters/debug_mask" ]; then
-					DEBUG=\`$BB cat /sys/module/cpu_boost/parameters/debug_mask\`
-						echo '{ SCheckBox:{
-								label:"调试选项",
-								description:"Allows you to activate debug mask for CPU Boost operations.",
-								default:'$DEBUG',
-								action:"generic /sys/module/cpu_boost/parameters/debug_mask"
-						}},'
-					fi
-					if [ -f "/sys/module/cpu_boost/parameters/boost_ms" ]; then
-					BOOSTMS=\`$BB cat /sys/module/cpu_boost/parameters/boost_ms\`
+		name:CPU设置,
+			elements:[
+					{ SPane:{
+							title:"CPU当前频率:"
+						}},
+						{ SLiveLabel:{
+							refresh:1000,
+							action:"live CPU_CUR_Freq"
+					}},
+					{ SDescription:{
+						description:"受到不同软件或者thermal的影响，如果发现各个核心最大最小频率不正常，可按此键校准"
+					}},
+					{ SButton:{
+						label:"CPU校准",
+						action:"setcpufreq fixcpufreq"
+					}},
+					{ STitleBar:{
+						title:"CPU频率调节"
+					}},
+					`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" ]; then
 						$BB echo '{ SSeekBar:{
-								title:"优化时间",
-								description:"最低的 CPU 优化间隔时间。",
-								unit:" ms",
-								min:0,
-								max:5000,
-								step:10,
-								default:'$BOOSTMS',
-								action:"generic /sys/module/cpu_boost/parameters/boost_ms"
-						}},'
-					fi
-					if [ -f "/sys/module/cpu_boost/parameters/sync_threshold" ]; then
-					SYNCT=\`$BB cat /sys/module/cpu_boost/parameters/sync_threshold\`
-						$BB echo '{ SSeekBar:{
-							title:"同步阈值",
-							description:"当CPU负载超过预设的阈值，当前 CPU 提升到该频率。",
-							default:'$SYNCT',
-							action:"generic /sys/module/cpu_boost/parameters/sync_threshold",
-							values:{ 0:"Disabled", '
+							title:"CPU 最高频率 (全局)",
+							description:"设定 CPU 负载时的最高工作频率。频率可受到thermal影响。",
+							default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq\`',
+							action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
+							values:{'
 								sh $DEVICE CPUFrequencyList
 							$BB echo '}
 						}},'
-					fi
-					if [ -f "/sys/module/cpu_boost/parameters/input_boost_ms" ]; then
+					fi`
+					`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" ]; then
+						$BB echo '{ SSeekBar:{
+							title:"CPU 最低频率 (全局)",
+							description:"设定 CPU 负载时的最低工作频率。频率可受到thermal影响。",
+							default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq\`',
+							action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",
+							values:{'
+								sh $DEVICE CPUFrequencyList
+							$BB echo '}
+						}},'
+					fi`
+					`if [ -f "/sys/module/cpu_boost/parameters/input_boost_ms" ]; then
 					SYNCT=\`$BB cat /sys/module/cpu_boost/parameters/input_boost_ms\`
 						$BB echo '{ SSeekBar:{
-								title:"输入优化间隔",
-								description:"当检测到有输入动作时 CPU 升频的最小间隔 。",
+								title:"触摸提速",
+								description:"当检测到有触摸动作时 CPU 升频的最小间隔 。",
 								unit:" ms",
 								min:0,
 								max:5000,
@@ -94,28 +54,13 @@ cat << CTAG
 								action:"generic /sys/module/cpu_boost/parameters/input_boost_ms"
 						}},'
 					fi
-					if [ -f "/sys/module/cpu_boost/parameters/min_input_interval" ]; then
-					MBOOSTINT=\`$BB cat /sys/module/cpu_boost/parameters/min_input_interval\`
-						$BB echo '{ SSeekBar:{
-								title:"最低的输入间隔",
-								description:"触摸动作间最小间隔。",
-								unit:" ms",
-								min:100,
-								max:1500,
-								step:10,
-								default:'$MBOOSTINT',
-								action:"generic /sys/module/cpu_boost/parameters/min_input_interval"
-						}},'
-					fi
 					if [ -f "/sys/module/cpu_boost/parameters/input_boost_freq" ]; then
-					
 					VALUE=0; for i in \`$BB cat /sys/module/cpu_boost/parameters/input_boost_freq\`; do VALUE=$(($VALUE+1)); done;
-					
 						if [ $VALUE -eq 1 ]; then
 							IBF=\`$BB cat /sys/module/cpu_boost/parameters/input_boost_freq\`
 							
 							$BB echo '{ SSeekBar:{
-								title:"输入优化频率",
+								title:"触摸频率",
 								description:"当触摸屏幕或按建时，提升到优化的输入 CPU 频率。",
 								default:'$IBF',
 								action:"generic /sys/module/cpu_boost/parameters/input_boost_freq",
@@ -175,203 +120,19 @@ cat << CTAG
 				title:"CPU 调速器",
 				description:"CPU 调速器会根据设定的策略去响应和处理不同的工作负载。更多信息请点击 : <a href='http://timos.me/tm/wiki/cpugovernors'>HERE</a>"
 			}},
-				`if [ -f "/sys/kernel/msm_limiter/scaling_governor_0" ] && [ ! -f "/sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_all_cpus" ]; then
+				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor" ]; then
 					$BB echo '{ SOptionList:{
-						title:"更改所有的 CPU 调速器（应用全局）",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"cpuset '\`sh $DEVICE DirCPUGovernor\`'",
+						title:"CPU 调速器（全局）",
+						description:"如果更改调速器需要重启进入synapse调整",
+						default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor\`',
+						action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
 						values:['
 							sh $DEVICE CPUGovernorList
 						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},'
-				fi`
-				`if [ -f "/sys/kernel/msm_limiter/scaling_governor_0" ]; then
-					$BB echo '{ SOptionList:{
-						title:"CPU0 调速器",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/kernel/msm_limiter/scaling_governor_0",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},
-					{ SOptionList:{
-						title:"CPU1 调速器",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/kernel/msm_limiter/scaling_governor_1",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},
-					{ SOptionList:{
-						title:"CPU2 调速器",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/kernel/msm_limiter/scaling_governor_2",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},
-					{ SOptionList:{
-						title:"CPU3 调速器",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/kernel/msm_limiter/scaling_governor_3",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},'
-				fi`
-				`if [ -f "/sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_all_cpus" ]; then
-					$BB echo '{ SOptionList:{
-						title:"CPU0 调速器（全局）",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_all_cpus",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:[
-									"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu1",
-									"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu2",
-									"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu3",
-								]
-							}
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},
-					{ SOptionList:{
-						title:"CPU1 调速器（全局）",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu1",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},
-					{ SOptionList:{
-						title:"CPU2 调速器（全局）",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu2",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
-					}},
-					{ SOptionList:{
-						title:"CPU3 调速器（全局）",
-						default:'\`sh $DEVICE DefaultCPUGovernor\`',
-						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu3",
-						values:['
-							sh $DEVICE CPUGovernorList
-						$BB echo '],
-						notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, CANCEL ],
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							},
-							{
-								on:REFRESH,
-								do:REFRESH,
-								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
-							}
-						]
 					}},'
 				fi`
 			{ SPane:{
-				title:"CPU 调速器策略调整"
+				title:"CPU 调速器策略调整。"
 			}},
 				{ STreeDescriptor:{
 					path:"`sh $DEVICE DirCPUGovernorTree`",

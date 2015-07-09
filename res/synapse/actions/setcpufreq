@@ -1,4 +1,4 @@
-BB=busybox;
+BB=/sbin/busybox;
 
 hotplugcheck()
 {	
@@ -51,6 +51,14 @@ checkrw()
 	fi
 }
 
+unlockgov()
+{
+	chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor;
+	chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+	chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+	chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+}
+
 lockfreq()
 {	
 	chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
@@ -91,7 +99,7 @@ changemin()
 	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
 }
 
-if [ -f $1 ];then
+if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 	if [[ ! -z $2 ]]; then
 		if [ "$1" == "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" ];then
 			hotplugcheck;
@@ -123,28 +131,43 @@ if [ -f $1 ];then
 				hotplugset 1;
 			fi
 		fi
+		if [ "$1" == "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor" ];then
+			hotplugcheck;
+			hotplugset 0;
+			getonline;
+			unlockgov;
+			echo ${2} > ${1};
+			echo ${2} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+			echo ${2} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+			echo ${2} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			hotplugset 1;
+		fi
 	fi
-	if [ $1 == "fixcpufreq" ];then
+	if [ "$1" == "fixcpufreq" ];then
+		$BB echo "频率以及调速器已校准。";
 		hotplugcheck;
 		checkrw;
+		unlockgov;
 		if [ ${CPUFREQSETCHECK} == "1" ];then
 			unlockfreq;
 			changemax;
+			changemin;
 			lockfreq;
+			cpu0_gov=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`;
+			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
 			hotplugset 1;
 		else
+			changemin;
 			changemax;
+			cpu0_gov=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`;
+			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
 			hotplugset 1;
 		fi
-		if [ ${CPUFREQSETCHECK} == "1" ];then
-			unlockfreq;
-			changemin;
-			lockfreq;
-			hotplugset 1;
-		else
-			changemin;
-			hotplugset 1;
-		fi
+		#$BB echo "已校准。";
 	else
 		echo `cat $1`;
 	fi

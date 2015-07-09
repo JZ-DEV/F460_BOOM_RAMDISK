@@ -26,7 +26,7 @@ adb shell su -c "chmod 0777 /res/synapse/files/*"
 adb shell su -c "am force-stop com.af.synapse 2> /dev/null"
 adb shell su -c "/res/synapse/uci reset"
 adb shell su -c "/res/synapse/uci"
-ping -n 3 127.0.0.1 > nul
+ping -n 1 127.0.0.1 > nul
 adb shell su -c "am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null"
 adb shell su -c "rm -R /storage/external_SD/res"
 pause

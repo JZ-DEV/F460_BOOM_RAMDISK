@@ -46,17 +46,17 @@ case "$1" in
 	;;
 	DefaultCPUCURFrequency)
 		CPU0_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000)MHz";
-		if [ -e /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq ];then
+		if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
 			CPU1_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq` / 1000)MHz";
 			else 
 			CPU1_FREQCUR=`echo "休眠"`;
 		fi
-		if [ -e /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq ];then
+		if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
 			CPU2_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq` / 1000)MHz";
 			else 
 			CPU2_FREQCUR=`echo "休眠"`;
 		fi
-		if [ -e /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq ];then
+		if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
 			CPU3_FREQCUR="$(expr `cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq` / 1000)MHz";
 			else 
 			CPU3_FREQCUR=`echo "休眠"`;

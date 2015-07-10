@@ -40,12 +40,18 @@ checkrw()
 	getonline;
 	jumax0=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
 	jumin0=`ls -l /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-	jumax1=`ls -l /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-	jumin1=`ls -l /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-	jumax2=`ls -l /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-	jumin2=`ls -l /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-	jumax3=`ls -l /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
-	jumin3=`ls -l /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+		jumax1=`ls -l /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+		jumin1=`ls -l /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+		jumax2=`ls -l /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+		jumin2=`ls -l /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+		jumax3=`ls -l /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+		jumin3=`ls -l /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq | sed 's/ .*//g' | sed 's/r//g' | sed 's/-//g' | wc -w`;
+	fi
 	if [ "${jumax0}" == 0 ] || [ "${jumin0}" == 0 ] || [ "${jumax1}" == 0 ] || [ "${jumin1}" == 0 ] || [ "${jumax2}" == 0 ] || [ "${jumin2}" == 0 ] || [ "${jumax3}" == 0 ] || [ "${jumin3}" == 0 ];then
 		CPUFREQSETCHECK=1 ;
 	fi
@@ -54,49 +60,79 @@ checkrw()
 unlockgov()
 {
 	chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor;
-	chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
-	chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
-	chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+	if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+		chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+		chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+		chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+	fi
 }
 
 lockfreq()
 {	
 	chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 	chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
-	chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
-	chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
-	chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
-	chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
-	chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
-	chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+	if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+		chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+		chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+		chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+		chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+		chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+		chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+	fi
 }
 
 unlockfreq()
 {	
 	chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq;
 	chmod 0644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq;
-	chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
-	chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
-	chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
-	chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
-	chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
-	chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+	if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+		chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+		chmod 0644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+		chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+		chmod 0644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+		chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+		chmod 0644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+	fi
 }
 
 changemax()
 {
 	cpu_max_freq=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq`;
-	echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
-	echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
-	echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+	if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+		echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+		echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+		echo "${cpu_max_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq;
+	fi
 }
 
 changemin()
 {
 	cpu_min_freq=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq`;
-	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
-	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
-	echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+	if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+		echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+		echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq;
+	fi
+	if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+		echo "${cpu_min_freq}" > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq;
+	fi
 }
 
 if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
@@ -137,9 +173,15 @@ if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 			getonline;
 			unlockgov;
 			echo ${2} > ${1};
-			echo ${2} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
-			echo ${2} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
-			echo ${2} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+				echo ${2} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+			fi
+			if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+				echo ${2} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+			fi
+			if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+				echo ${2} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			fi
 			hotplugset 1;
 		fi
 	fi
@@ -153,17 +195,29 @@ if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 			changemin;
 			lockfreq;
 			cpu0_gov=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`;
-			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
-			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
-			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+				echo ${cpu0_gov} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+			fi
+			if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+				echo ${cpu0_gov} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+			fi
+			if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+				echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			fi
 			hotplugset 1;
 		else
 			changemin;
 			changemax;
 			cpu0_gov=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`;
-			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
-			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
-			echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			if [ -d /sys/devices/system/cpu/cpu1/cpufreq ];then
+				echo ${cpu0_gov} > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor;
+			fi
+			if [ -d /sys/devices/system/cpu/cpu2/cpufreq ];then
+				echo ${cpu0_gov} > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor;
+			fi
+			if [ -d /sys/devices/system/cpu/cpu3/cpufreq ];then
+				echo ${cpu0_gov} > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor;
+			fi
 			hotplugset 1;
 		fi
 		$BB echo "频率以及调速器已校准";

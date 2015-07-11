@@ -140,7 +140,7 @@ if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 		if [ "$1" == "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" ];then
 			hotplugcheck;
 			checkrw;
-			if [ ${CPUFREQSETCHECK} == "1" ];then
+			if [ "${CPUFREQSETCHECK}" == "1" ];then
 				unlockfreq;
 				echo ${2} > ${1};
 				changemax;
@@ -155,7 +155,7 @@ if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 		if [ "$1" == "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" ];then
 			hotplugcheck;
 			checkrw;
-			if [ ${CPUFREQSETCHECK} == "1" ];then
+			if [ "${CPUFREQSETCHECK}" == "1" ];then
 				unlockfreq;
 				echo ${2} > ${1};
 				changemin;
@@ -189,7 +189,7 @@ if [ -f $1 ] || [ "$1" == "fixcpufreq" ];then
 		hotplugcheck;
 		checkrw;
 		unlockgov;
-		if [ ${CPUFREQSETCHECK} == "1" ];then
+		if [ "${CPUFREQSETCHECK}" == "1" ];then
 			unlockfreq;
 			changemax;
 			changemin;

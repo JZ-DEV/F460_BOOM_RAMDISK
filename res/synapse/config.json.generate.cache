@@ -1,0 +1,89 @@
+cat << CTAG
+{
+		name:内存与缓存,
+			elements:[
+					{ SPane:{
+							title:"内存与L2缓存:"
+						}},
+					{ SDescription:{
+						description:"JZ内核使用了动态内存和L2缓存调节，基于DEVFREQ，可以在CPU频率降下去时，依然提供足够的带宽和性能。"
+					}},
+					{ SLiveLabel:{
+						refresh:1000,
+						action:"live CUR_l2_bw_freq"
+					}},
+					{ STitleBar:{
+						title:"频率调节"
+					}},
+					`if [ -f "/sys/class/devfreq/qcom,cpubw.35/max_freq" ]; then
+						$BB echo '{ SSeekBar:{
+							title:"内存最高带宽",
+							description:"高通将内存的不同频率换算成带宽，具体带宽对应频率值可以查看源码。内存带宽对整机性能有极大影响，但也占很大一部分功耗。",
+							default:'\`$BB cat /sys/class/devfreq/qcom,cpubw.35/max_freq\`',
+							action:"generic /sys/class/devfreq/qcom,cpubw.35/max_freq",
+							values:{'
+								sh $DEVICE BWFrequencyList
+							$BB echo '}
+						}},'
+					fi`
+					`if [ -f "/sys/class/devfreq/qcom,cpubw.35/min_freq" ]; then
+						$BB echo '{ SSeekBar:{
+							title:"内存最小带宽",
+							default:'\`$BB cat /sys/class/devfreq/qcom,cpubw.35/min_freq\`',
+							action:"generic /sys/class/devfreq/qcom,cpubw.35/min_freq",
+							values:{'
+								sh $DEVICE BWFrequencyList
+							$BB echo '}
+						}},'
+					fi`
+					`if [ -f "/sys/class/devfreq/qcom,cache.34/max_freq" ]; then
+						$BB echo '{ SSeekBar:{
+							title:"L2最大频率",
+							description:"高通将内存的不同频率换算成带宽，具体带宽对应频率值可以查看源码。L2对整机性能有极大影响，对CPU发热有巨大影响。",
+							default:'\`$BB cat /sys/class/devfreq/qcom,cache.34/max_freq\`',
+							action:"generic /sys/class/devfreq/qcom,cache.34/max_freq",
+							values:{'
+								sh $DEVICE L2FrequencyList
+							$BB echo '}
+						}},'
+					fi`
+					`if [ -f "/sys/class/devfreq/qcom,cache.34/min_freq" ]; then
+						$BB echo '{ SSeekBar:{
+							title:"内存最小带宽",
+							default:'\`$BB cat /sys/class/devfreq/qcom,cache.34/min_freq\`',
+							action:"generic /sys/class/devfreq/qcom,cache.34/min_freq",
+							values:{'
+								sh $DEVICE L2FrequencyList
+							$BB echo '}
+						}},'
+					fi`
+					{ STitleBar:{
+						title:"调速器设置"
+					}},
+					{ SDescription:{
+						description:"动态调速是JZ内核精华的一部分，虽然在低频上增加了少量的热量和耗电，但是可以保证极速的流畅性，跟随CPU调节则和官方相同，CPU频率高就高，CPU频率低就低。"
+					}},
+					`if [ -f "/sys/class/devfreq/qcom,cpubw.35/governor" ]; then
+						$BB echo '{ SOptionList:{
+							title:"内存调速器",
+							default:'\`$BB cat /sys/class/devfreq/qcom,cpubw.35/governor\`',
+							action:"generic /sys/class/devfreq/qcom,cpubw.35/governor",
+							values:{
+								cpubw_hwmon:"动态内存调速", cpufreq:"跟随CPU频率调节",
+								}
+						}},'
+					fi`
+					`if [ -f "/sys/class/devfreq/qcom,cache.34/governor" ]; then
+						$BB echo '{ SOptionList:{
+							title:"L2调速器",
+							default:'\`$BB cat /sys/class/devfreq/qcom,cache.34/governor\`',
+							action:"generic /sys/class/devfreq/qcom,cache.34/governor",
+							values:{
+								cache_hwmon:"动态L2调速", cpufreq:"跟随CPU频率调节",
+								}
+						}},'
+					fi`
+				
+		]
+}
+CTAG

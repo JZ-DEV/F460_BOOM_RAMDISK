@@ -29,15 +29,21 @@ case "$1" in
 	DebugSPEED)
 		$BB echo "SPEED BIN";
 	;;
-	DefaultCPUBWGovernor)
-		if [ -d /sys/class/devfreq/qcom,cpubw.* ]; then
-			$BB echo "`$BB cat /sys/class/devfreq/qcom,cpubw.*/governor`"
-		fi
+	LiveBWL2Frequencyshow)
+		BWFREQ="$($BB cat /sys/class/devfreq/qcom,cpubw.35/cur_freq)MB/s";
+		L2FREQ="$(expr `$BB cat /sys/class/devfreq/qcom,cache.34/cur_freq` / 1000)MHz";
+		$BB echo "L2频率：${L2FREQ}@n当前内存最大带宽：${BWFREQ}";
 	;;
-	DefaultCPUL2Governor)
-		if [ -d /sys/class/devfreq/qcom,cache.* ]; then
-			$BB echo "`$BB cat /sys/class/devfreq/qcom,cache.*/governor`"
-		fi
+	BWFrequencyList)
+		for BWFREQ in `$BB cat /sys/class/devfreq/qcom,cpubw.35/available_frequencies`; do
+			$BB echo "$BWFREQ:\"${BWFREQ} MB\", ";
+		done;
+	;;
+	L2FrequencyList)
+		for L2FREQ in `$BB cat /sys/class/devfreq/qcom,cache.34/available_frequencies`; do
+			LABEL=$((L2FREQ / 1000));
+			$BB echo "$L2FREQ:\"${LABEL} MHz\", ";
+		done;
 	;;
 	DefaultCPUFrequency)
 		CPU0_FREQMAX="$(expr `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq` / 1000)MHz";

@@ -67,7 +67,15 @@ cat << CTAG
 			{ SLiveLabel:{
 				title:"各频率时间:",
 				refresh:5000,
-				action:"live Time 0 19"
+				action:"live Time 0 9"
+			}},
+			{ SLiveLabel:{
+				refresh:5000,
+				action:"live Time 10 19"
+			}},
+			{ SLiveLabel:{
+				refresh:5000,
+				action:"live Time 20 20"
 			}},
 		]
 }

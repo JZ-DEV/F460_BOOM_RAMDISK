@@ -1,61 +1,455 @@
-#!/sbin/busybox sh
-
 cat << CTAG
 {
-    name:HOTPLUG,
-    elements:[
-	{ SLiveLabel:{
-		title:"Core Status",
-		refresh:500,
-		action:"live CORESTATUS"
-	}},
-        { STitleBar:{
-		title:"Hotplug Driver"
-        }},
-	{ SOptionList:{
-		default:MSM_Hotplug,
-		description: "MSM Hotplug is default hotplug driver that hotplug cores based on system load. Intelli Hotplug is interlligient which hooks in task scheduler and hotplug cores accordingly. Bricked hotplug is conservative hotplug driver. Stock will let system ROM to decide hotplug mechanism; it is dependent of mpdecision present within ROM. On 5.1 Shamu ROM, mpdecision doesn't unplug any core and let all cores online.",
-		action:"hotplug_select /res/synapse/files/hotplug_prof",
-		values:[ MSM_Hotplug, Intelli_Hotplug, Bricked_Hotplug, Stock
-		],
-	}},
-	{ SSeekBar:{
-		title:"Touch Boosted CPUs",
-		description:"This will decided no. of cores to be boosted when screen is touched. Higher the number of cores, higher the performance. This must be lesser than or equal to no. of Max CPUs online. When is is set to lesser or equal value of Min CPUs online, it is as good as disabled. This tunable works only for MSM Hotplug and Intelli Hotplug.",
-		min:1, max:4, unit:" cores", step:1,
-		default:2,
-                action:"hotplug_action cpus_boosted"
-	}},
-	{ SSeekBar:{
-		title:"Min CPUs Online",
-		description:"This will decide minimum number of cores that stays online when device is not suspended. Higher the number of cores, better the performance. This must be less than or equal to no. of Max CPUs online. This tunable works only for MSM Hotplug, Intelli Hotplug and Bricked Hotplug.",
-		min:1, max:4, unit:" cores", step:1,
-		default:1,
-                action:"hotplug_action min_cpus_online"
-	}},
-	{ SSeekBar:{
-		title:"Max CPUs Online",
-		description:"This will decide maximum number of cores that can go online at any given time. Higher the number of cores, better the performance. This must be greater than or equal to no. of Min CPUs online and Boosted CPUs. This tunable works only for MSM Hotplug, Intelli Hotplug and Bricked Hotplug.",
-		min:1, max:4, unit:" cores", step:1,
-		default:4,
-                action:"hotplug_action max_cpus_online"
-	}},
-	{ SSeekBar:{
-		title:"Max CPUs Online (Suspend)",
-		description:"This will decide maximum number of cores that can go online when device is suspended. Higher the number of cores, better the performance. This should be less than or equal to no. of Max CPUs online. In case you are having trouble like music glitch on screen off, keep this value greater than unity. Please note when value is set to 1, you will have very good power saving since hotplug will be completely suspended when idle. This tunable works only for MSM Hotplug, Intelli Hotplug and Bricked Hotplug.",
-		min:1, max:4, unit:" cores", step:1,
-		default:1,
-                action:"hotplug_action max_cpus_online_susp"
-	}},
-	{ SOptionList:{
-		title:"Intelliplug Full Mode Profile",
-		description:"Full mode profile is specific to Intelli Hotplug with Max CPUs Online = 4. This changes behavior of Intelli Hotplug to perform accordingly.",
-		default:0,
-		action:"generic /sys/kernel/intelli_plug/full_mode_profile",
-		values:{
-			0:"Balanced", 1:"Performance", 2:"Conservative"
-		}
-	}},
-    ]
+	name:CPU热插拔,
+		elements:[
+			{ SPane:{
+				title:"注意"
+			}},
+				{ SDescription:{
+					description:"以下驱动选项只能单独选其一项，多选可能会带来不可预料的结果，请谨慎使用。"
+				}},
+			`if [ -d "/sys/kernel/alucard_hotplug" ]; then
+				$BB echo '{ SPane:{
+					title:"Alucard热插拔"
+				}},'
+				if [ -f "/sys/kernel/alucard_hotplug/hotplug_enable" ]; then
+				ALUCARDON=\`$BB cat /sys/kernel/alucard_hotplug/hotplug_enable\`;
+					$BB echo '{ SCheckBox:{
+						label:"启用",
+						description:"一个高效率热插拔，由 Alucard24 提供。",
+						default:'$ALUCARDON',
+						action:"generic /sys/kernel/alucard_hotplug/hotplug_enable"
+					}},'
+				fi
+				if [ -f "/sys/kernel/alucard_hotplug/hotplug_sampling_rate" ]; then
+					$BB echo '{ SSeekBar:{
+						title:"热插拔采样率",
+						description:"此值为热插拔操作以及采样的时间间隔，数值越小，操作越频繁。",
+						default:'\`$BB cat /sys/kernel/alucard_hotplug/hotplug_sampling_rate\`',
+						unit:" ms",
+						min:0,
+						max:500,
+						step:1,
+						action:"generic /sys/kernel/alucard_hotplug/hotplug_sampling_rate",
+					}},'
+				fi
+				if [ -f "/sys/kernel/alucard_hotplug/maxcoreslimit" ]; then
+					$BB echo '{ SSeekBar:{
+						title:"最大核心数量",
+						description:"热插拔打开的最大核心数。",
+						default:'\`$BB cat /sys/kernel/alucard_hotplug/maxcoreslimit\`',
+						unit:" 核心",
+						min:1,
+						max:4,
+						step:1,
+						action:"generic /sys/kernel/alucard_hotplug/maxcoreslimit",
+								
+					}},'
+				fi
+				if [ -f "/sys/kernel/alucard_hotplug/min_cpus_online" ]; then
+					$BB echo '{ SSeekBar:{
+						title:"最小核心数量",
+						description:"热插拔打开的最小核心数。",
+						default:'\`$BB cat /sys/kernel/alucard_hotplug/min_cpus_online\`',
+						unit:" 核心",
+						min:1,
+						max:4,
+						step:1,
+						action:"generic /sys/kernel/alucard_hotplug/min_cpus_online",
+								
+					}},'
+				fi
+				if [ -f "/sys/kernel/alucard_hotplug/hp_io_is_busy" ]; then
+				ALUIOBUSY=\`$BB cat /sys/kernel/alucard_hotplug/hp_io_is_busy\`;
+					$BB echo '{ SCheckBox:{
+						label:"IO繁忙",
+						description:"热插拔是否考虑IO状态来控制核心数量。",
+						default:'$ALUIOBUSY',
+						action:"boolean /sys/kernel/alucard_hotplug/hp_io_is_busy"
+					}},'
+				fi
+			fi`
+		`[ -d "/sys/kernel/msm_mpdecision/conf" ] && BHC=/sys/kernel/msm_mpdecision/conf;
+			if [ "$BHC" == "/sys/kernel/msm_mpdecision/conf" ]; then BHN="Bricked 热插拔"; fi;
+			if [ -d "$BHC" ]; then
+				if [ -f "$BHC/enabled" ]; then
+				MSMMPD=\`$BB cat $BHC/enabled\`
+					$BB echo '{ SPane:{
+						title:"'$BHN'"
+					}},
+						{ SCheckBox:{
+							label:"启用",
+							description:"基于高通 MPDecision 负载运算的热插拔。由 show-p1984 提供。",
+							default:'$MSMMPD',
+							action:"generic '$BHC'/enabled"
+						}},'
+				fi
+				if [ -f "$BHC/min_cpus" ]; then
+				MINCPU=\`$BB cat $BHC/min_cpus\`
+					$BB echo '{ SSeekBar:{
+							title:"最小核心数量",
+							description:"负载时可同时运行的最小核心数量。",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MINCPU',
+							action:"generic '$BHC'/min_cpus",
+					}},'
+				fi
+				if [ -f "$BHC/max_cpus" ]; then
+				MAXCPU=\`$BB cat $BHC/max_cpus\`
+					$BB echo '{ SSeekBar:{
+							title:"最大核心数量",
+							description:"负载时可同时运行的最大核心数量。",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MAXCPU',
+							action:"generic '$BHC'/max_cpus",
+					}},'
+				fi
+				if [ -f "$BHC/min_cpus_online" ]; then
+				MINCPU=\`$BB cat $BHC/min_cpus_online\`
+					$BB echo '{ SSeekBar:{
+							title:"最小核心数量",
+							description:"负载时可同时运行的最小核心数量。",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MINCPU',
+							action:"generic '$BHC'/min_cpus_online",
+					}},'
+				fi
+				if [ -f "$BHC/max_cpus_online" ]; then
+				MAXCPU=\`$BB cat $BHC/max_cpus_online\`
+					$BB echo '{ SSeekBar:{
+							title:"最大核心数量",
+							description:"设置屏幕关闭后可同时使用的最大核心使用数量。",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MAXCPU',
+							action:"generic '$BHC'/max_cpus_online",
+					}},'
+				fi
+				if [ -f "$BHC/idle_freq" ]; then
+					$BB echo '{ SSeekBar:{
+							title:"待机频率",
+							description:"如果 CPU0 低于此频率，不要加载 CPU 1-3。",
+							action:"generic '$BHC'/idle_freq",
+							values:{'
+								sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi
+				if [ -f "$BHC/boost_enabled" ]; then
+				BOOST=\`$BB cat $BHC/boost_enabled\`
+					$BB echo '{ SCheckBox:{
+							label:"优化输入响应频率",
+							description:"当你触屏或按键的时候启动最低的优化频率去处理事件。",
+							default:'$BOOST',
+							action:"generic '$BHC'/boost_enabled"
+						}},'
+				fi
+				if [ -f "$BHC/boost_time" ]; then
+				BT=\`$BB cat $BHC/boost_time\`
+					$BB echo '{ SSeekBar:{
+							title:"优化输入响应时间",
+							description:"Time that will boost your minimum CPU speed if you touch the screen or press a button.",
+							unit:" ms",
+							min:0,
+							max:5000,
+							step:100,
+							default:'$BT',
+							action:"generic '$BHC'/boost_time",
+					}},'
+				fi
+				if [ -f "$BHC/cpus_boosted" ]; then
+				BOOST=\`$BB cat $BHC/cpus_boosted\`
+					$BB echo '{ SSeekBar:{
+						title:"最大核心优化输入响应选项",
+						description:"设置当有输入动作时可用的最大核心数量。",
+						min:0,
+						max:'
+							sh $DEVICE MaxCPU
+						$BB echo ',
+						step:1,
+						default:'$BOOST',
+						action:"generic '$BHC'/cpus_boosted",
+					}},'
+				fi
+				if [ -f "$BHC/boost_freqs" ]; then
+					for BF in 0 1 2 3; do
+						$BB echo '{ SSeekBar:{
+							title:"Boost Frequency Core'$BF'",
+							action:"mpdboostfreq '$BF'",
+							values: {'
+								sh $DEVICE CPUFrequencyList
+							$BB echo '}
+						}},'
+					done;
+				fi
+				if [ -f "$BHC/startdelay" ]; then
+				SD=\`$BB cat $BHC/startdelay\`
+					$BB echo '{ SSeekBar:{
+							title:"开启延迟",
+							description:"设置 MPD 开启时延迟的时间。",
+							unit:" ms",
+							min:0,
+							max:50000,
+							step:1000,
+							default:'$SD',
+							action:"generic '$BHC'/startdelay",
+					}},'
+				fi
+				if [ -f "$BHC/delay" ]; then
+				DL=\`$BB cat $BHC/delay\`
+					$BB echo '{ SSeekBar:{
+							title:"延时",
+							description:"两个检测之间的时间",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:5,
+							default:'$DL',
+							action:"generic '$BHC'/delay",
+					}},'
+				fi
+				if [ -f "$BHC/down_lock_duration" ]; then
+				DOWNLOCK=\`$BB cat $BHC/down_lock_duration\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭锁定时间",
+							description:"CPU 核心加载的最小时间间隔。",
+							unit:" ms",
+							min:300,
+							max:5000,
+							step:10,
+							default:'$DOWNLOCK',
+							action:"generic '$BHC'/down_lock_duration"
+					}},'
+				fi
+				if [ -f "$BHC/pause" ]; then
+				PAUSE=\`$BB cat $BHC/pause\`
+					$BB echo '{ SSeekBar:{
+							title:"暂停",
+							description:"If something else plugs in the CPU, fall asleep for this amount of time.",
+							unit:" ms",
+							min:0,
+							max:50000,
+							step:1000,
+							default:'$PAUSE',
+							action:"generic '$BHC'/pause",
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_0" ]; then
+				NWNS0=\`$BB cat $BHC/nwns_threshold_0\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU1 的请求阈值",
+							description:"如果这个阈值达到，CPU1 将被加载。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS0',
+							action:"generic '$BHC'/nwns_threshold_0"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_1" ]; then
+				NWNS1=\`$BB cat $BHC/nwns_threshold_1\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU0 的请求阈值",
+							description:"如果这个阈值达到，CPU0 将被关闭。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS1',
+							action:"generic '$BHC'/nwns_threshold_1"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_2" ]; then
+				NWNS2=\`$BB cat $BHC/nwns_threshold_2\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU2 的请求阈值",
+							description:"如果这个阈值达到，CPU2 将被加载。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS2',
+							action:"generic '$BHC'/nwns_threshold_2"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_3" ]; then
+				NWNS3=\`$BB cat $BHC/nwns_threshold_3\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU1 的请求阈值",
+							description:"如果这个阈值达到，CPU1 将被关闭。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS3',
+							action:"generic '$BHC'/nwns_threshold_3"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_4" ]; then
+				NWNS4=\`$BB cat $BHC/nwns_threshold_4\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU3 的请求阈值",
+							description:"如果这个阈值达到，CPU3 将被加载。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS4',
+							action:"generic '$BHC'/nwns_threshold_4"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_5" ]; then
+				NWNS5=\`$BB cat $BHC/nwns_threshold_5\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU2 的请求阈值",
+							description:"如果这个阈值达到，CPU2 将被关闭。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS5',
+							action:"generic '$BHC'/nwns_threshold_5"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_6" ]; then
+				NWNS6=\`$BB cat $BHC/nwns_threshold_6\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU4 的请求阈值",
+							description:"如果这个阈值达到，CPU4 将被加载。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS6',
+							action:"generic '$BHC'/nwns_threshold_6"
+					}},'
+				fi
+				if [ -f "$BHC/nwns_threshold_7" ]; then
+				NWNS7=\`$BB cat $BHC/nwns_threshold_7\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU3 的请求阈值",
+							description:"如果这个阈值达到，CPU3 将被关闭。",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS7',
+							action:"generic '$BHC'/nwns_threshold_7"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_0" ]; then
+				TWTS0=\`$BB cat $BHC/twts_threshold_0\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU1 的时间阈值",
+							description:"必须持续此时间值才能加载 CPU1。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS0',
+							action:"generic '$BHC'/twts_threshold_0"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_1" ]; then
+				TWTS1=\`$BB cat $BHC/twts_threshold_1\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU0 的时间阈值",
+							description:"必须持续此时间值才能关闭 CPU0。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS1',
+							action:"generic '$BHC'/twts_threshold_1"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_2" ]; then
+				TWTS2=\`$BB cat $BHC/twts_threshold_2\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU2 的时间阈值",
+							description:"必须持续此时间值才能加载 CPU2。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS2',
+							action:"generic '$BHC'/twts_threshold_2"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_3" ]; then
+				TWTS3=\`$BB cat $BHC/twts_threshold_3\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU1 的时间阈值",
+							description:"必须持续此时间值才能关闭 CPU1。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS3',
+							action:"generic '$BHC'/twts_threshold_3"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_4" ]; then
+				TWTS4=\`$BB cat $BHC/twts_threshold_4\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU3 的时间阈值",
+							description:"必须持续此时间值才能加载 CPU3。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS4',
+							action:"generic '$BHC'/twts_threshold_4"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_5" ]; then
+				TWTS5=\`$BB cat $BHC/twts_threshold_5\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU2 的时间阈值",
+							description:"必须持续此时间值才能关闭 CPU2。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS5',
+							action:"generic '$BHC'/twts_threshold_5"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_6" ]; then
+				TWTS6=\`$BB cat $BHC/twts_threshold_6\`
+					$BB echo '{ SSeekBar:{
+							title:"启用 CPU4 的时间阈值",
+							description:"必须持续此时间值才能加载 CPU4。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS6',
+							action:"generic '$BHC'/twts_threshold_6"
+					}},'
+				fi
+				if [ -f "$BHC/twts_threshold_7" ]; then
+				TWTS7=\`$BB cat $BHC/twts_threshold_7\`
+					$BB echo '{ SSeekBar:{
+							title:"关闭 CPU3 的时间阈值",
+							description:"必须持续此时间值才能关闭 CPU3。",
+							unit:" ms",
+							min:0,
+							max:1000,
+							step:1,
+							default:'$TWTS7',
+							action:"generic '$BHC'/twts_threshold_7"
+					}},'
+				fi
+			fi`
+		]
 }
 CTAG

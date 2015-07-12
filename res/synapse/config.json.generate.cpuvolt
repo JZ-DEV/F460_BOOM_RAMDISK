@@ -1,6 +1,6 @@
 cat << CTAG
 {
-	name:CPU VOLT,
+	name:CPU电压设置,
 		elements:[
 			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
 				$BB echo '{ STitleBar:{

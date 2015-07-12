@@ -39,7 +39,7 @@ cat << CTAG
 					`if [ -f "/sys/class/devfreq/qcom,cache.34/max_freq" ]; then
 						$BB echo '{ SSeekBar:{
 							title:"L2最大频率",
-							description:"高通将内存的不同频率换算成带宽，具体带宽对应频率值可以查看源码。L2对整机性能有极大影响，对CPU发热有巨大影响。",
+							description:"L2对整机性能有极大影响，对CPU发热有巨大影响。",
 							default:'\`$BB cat /sys/class/devfreq/qcom,cache.34/max_freq\`',
 							action:"generic /sys/class/devfreq/qcom,cache.34/max_freq",
 							values:{'

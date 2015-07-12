@@ -1,6 +1,6 @@
 cat << CTAG
 {
-	name:GAMMA,
+	name:屏幕色彩控制,
 		elements:[
 			`if [ -d "/sys/devices/platform/kcal_ctrl.0" ]; then
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_enable" ]; then
@@ -9,8 +9,7 @@ cat << CTAG
 						title:"KCAL",
 					}},
 						{ SCheckBox:{
-							label:"Enable",
-							description:"Enables/Disables RGB Multiplier Control",
+							label:"色彩控制全局开关",
 							default:'$KCALE',
 							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_enable",
 						}},'
@@ -21,8 +20,8 @@ cat << CTAG
 						title:"Values",
 					}},
 						{ SGeneric:{
-							title:"KCAL",
-							description:"Controls R/G/B Multipliers",
+							title:"三原色调整",
+							description:"此设置影响整体屏幕色彩，以下分别为红、绿、蓝三个颜色数值，范围0-256",
 							default:'$KCAL',
 							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal",
 						}},'
@@ -30,8 +29,8 @@ cat << CTAG
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_invert" ]; then
 				KCALINV=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_invert\`;
 					$BB echo '{ SCheckBox:{
-						label:"KCAL inverted colors",
-						description:"Enables/Disables Display Inversion Mode",
+						label:"反色",
+						description:"打开屏幕色彩将取反",
 						default:'$KCALINV',
 						action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_invert"
 					}},'
@@ -39,10 +38,10 @@ cat << CTAG
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_min" ]; then
 				KM=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_min\`
 						$BB echo '{ SSeekBar:{
-							title:"KCAL Min",
-							description:"Controls minimum RGB Multiplier value.",
+							title:"三原色最小值",
+							description:"设置后三原色调整的数值最低将不会低于这个值.",
 							min:0,
-							max:255,
+							max:256,
 							step:1,
 							default:'$KM',
 							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_min"
@@ -51,8 +50,7 @@ cat << CTAG
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_cont" ]; then
 				KCALCONT=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_cont\`;
 					$BB echo '{ SSeekBar:{
-						title:"Contrast",
-						description:"Controls display contrast.",
+						title:"对比度设置",
 						min:128,
 						max:383,
 						step:1,
@@ -63,8 +61,7 @@ cat << CTAG
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_hue" ]; then
 				KCALHUE=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_hue\`;
 					$BB echo '{ SSeekBar:{
-						title:"Hue",
-						description:"Controls display hue.",
+						title:"色相/色调",
 						min:0,
 						max:1536,
 						step:1,
@@ -75,9 +72,8 @@ cat << CTAG
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_sat" ]; then
 				KCALSAT=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_sat\`;
 					$BB echo '{ SSeekBar:{
-						title:"Saturation",
-						description:"Controls saturation intensity. Move slider all the way to the left for grayscale mode.",
-						min:128,
+						title:"饱和度",
+						min:229,
 						max:383,
 						step:1,
 						default:'$KCALSAT',
@@ -87,8 +83,7 @@ cat << CTAG
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_val" ]; then
 				KCALVAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_val\`;
 					$BB echo '{ SSeekBar:{
-						title:"Value",
-						description:"Controls display value.",
+						title:"明度",
 						min:128,
 						max:383,
 						step:1,

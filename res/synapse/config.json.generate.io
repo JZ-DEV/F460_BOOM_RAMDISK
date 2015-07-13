@@ -1,13 +1,13 @@
 cat << CTAG
 {
-	name:I/O,
+	name:I/O控制,
 		elements:[
 			{ STitleBar:{
-				title:"I/O 控制"
+				title:"I/O控制"
 			}},
 				{ SSeekBar:{
 					title:"预读取缓存大小",
-					description:"设置内部存储器的预读取缓存大小.",
+					description:"设置内部存储器的预读取缓存大小。",
 					unit:" KB",
 					step:128,
 					min:128,
@@ -42,55 +42,55 @@ cat << CTAG
 						title:"软件CRC控制"
 					}},
 						{ SCheckBox:{
-							label:"软件CRC校验",
-							description:"使能软件CRC校验损失约30%的性能，所以我们允许被禁止",
+							label:"数据冗余校验控制",
+							description:"开启数据冗余校验控制会占用的 30% 以上的数据读写性能消耗。关闭可以获取更好的数据读写性能，但会使数据块的安全性不稳固，假如读写过程中出现意外可能会导致数据丢失，请谨慎选择。",
 							default:'$CRCS',
 							action:"boolean /sys/module/mmc_core/parameters/use_spi_crc"
 						}},'
 				fi`
+				`if [ -f "/sys/devices/msm_sdcc.1/mmc_host/mmc0/clk_scaling/scale_down_in_low_wr_load" ]; then
+				MMCC=\`$BB cat /sys/devices/msm_sdcc.1/mmc_host/mmc0/clk_scaling/scale_down_in_low_wr_load\`
+				$BB echo '{ SPane:{
+					title:"Memory Card Clock Scaling Control"
+				}},
+					{ SCheckBox:{
+						label:"MMC Clock Scaling Control",
+						description:"Optimize clock scaling during write requests. The default value for it is 0. In case we want to gain performance over power they should set it to 1.",
+						default:'$MMCC',
+						action:"generic /sys/devices/msm_sdcc.1/mmc_host/mmc0/clk_scaling/scale_down_in_low_wr_load"
+					}},'
+				fi`
 			{ SPane:{
-				title:"通用IO微调选项",
-				description:"设置内部存储器的IO微调选项"
+				title:"通用读写策略",
+				description:"设置内置储存的通用策略"
 			}},
 				{ SCheckBox:{
-					description:"Draw entropy from spinning (rotational) storage.",
-					label:"Add Random",
-					default:`$BB cat /sys/block/mmcblk0/queue/add_random`,
-					action:"ioset queue add_random"
-				}},
-				{ SCheckBox:{
-					description:"维护存储器的IO数据，禁用此选项将会导致IO监控软件故障.",
+					description:"保护存储器的IO数据，禁用此选项将会导致IO监控软件故障.",
 					label:"I/O Stats",
 					default:`$BB cat /sys/block/mmcblk0/queue/iostats`,
 					action:"ioset queue iostats"
 				}},
-				{ SCheckBox:{
-					description:"Treat device as rotational storage.",
-					label:"Rotational",
-					default:`$BB cat /sys/block/mmcblk0/queue/rotational`,
-					action:"ioset queue rotational"
-				}},				
 				{ SOptionList:{
-					title:"无合并（No Merges）",
-					description:"该存储设备所允许的调度队列的合并（优先级）类型.",
+					title:"队列合并",
+					description:"在存储器允许的情况下，按照调度器队列优先次序合并数据。大部分情况可以提升随即性能，但是某些情况下需要禁用。",
 					default:`$BB cat /sys/block/mmcblk0/queue/nomerges`,
 					action:"ioset queue nomerges",
 					values:{
-						0:"All", 1:"Simple Only", 2:"None"
+						0:"全部", 1:"部分", 2:"不合并"
 					}
 				}},
 				{ SOptionList:{
-					title:"RQ Affinity",
-					description:"Try to have scheduler requests complete on the CPU core they were made from. Higher is more aggressive. Some kernels only support 0-1.",
+					title:"队列亲和性",
+					description:"尽量让IO请求放在同一CPU上，按照常理说IO队列申请队列的CPU作为处理请求的CPU可以提升性能。",
 					default:`$BB cat /sys/block/mmcblk0/queue/rq_affinity`,
 					action:"ioset queue rq_affinity",
 					values:{
-						0:"Disabled", 1:"Enabled", 2:"Aggressive"
+						0:"关闭", 1:"打开", 2:"更多合并"
 					}
 				}},
 				{ SSeekBar:{
-					title:"NR Requests",
-					description:"Maximum number of read (or write) requests that can be queued to the scheduler in the block layer.",
+					title:"请求上限",
+					description:"读或写入在队列中请求的最大数量。",
 					step:128,
 					min:128,
 					max:2048,

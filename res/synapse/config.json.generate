@@ -32,12 +32,12 @@ cat << CTAG
 				. /res/synapse/config.json.generate.thermal
 				$BB echo ','
 			fi
-			#. /res/synapse/config.json.generate.io
-			#$BB echo ','
-			#. /res/synapse/config.json.generate.memory
-			#$BB echo ','
-			#. /res/synapse/config.json.generate.misc
-			#$BB echo ','
+			. /res/synapse/config.json.generate.io
+			$BB echo ','
+			. /res/synapse/config.json.generate.memory
+			$BB echo ','
+			. /res/synapse/config.json.generate.misc
+			$BB echo ','
 			. /res/synapse/config.json.generate.tools
 			$BB echo ','
 			. /res/synapse/config.json.generate.profile

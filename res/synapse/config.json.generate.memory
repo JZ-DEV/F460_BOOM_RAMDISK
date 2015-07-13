@@ -1,116 +1,70 @@
-#!/sbin/busybox sh
-
 cat << CTAG
 {
-    name:MEMORY,
-    elements:[
-		`if [ -f "/sys/devices/virtual/block/zram0/disksize" ]; then
-		ZRAM=\`$BB cat /sys/devices/virtual/block/zram0/disksize\`;
-		ZRAM=$((ZRAM / 1024 / 1024));
-		$BB echo '{ SPane:{
-			title:"Z-RAM",
-			description:"Attempts to increase performance by avoiding paging on physical storage, instead using a compressed virtual device in RAM. Paging takes place in RAM until it is necessary to use the swap space on physical storage."
-		}},
-			{ SSeekBar:{
-				unit:" MB",
-				step:10,
-				min:0,
-				max:1024, 
-				default:'$ZRAM',
-				action:"zram /sys/devices/virtual/block/zram0/disksize"
-			}},'
-		fi`
-		`if [ -f "/sys/block/zram0/comp_algorithm" ]; then
-		CA=\`$BB echo $(/res/synapse/actions/bracket-option /sys/block/zram0/comp_algorithm)\`;
-			$BB echo '{ SOptionList:{
-				title:"Compression Algorithm",
-				description:"Applying a different option will reset Z-RAM. LZ4 algorithm tends to have a faster decompression. More info: <a href='https://code.google.com/p/lz4/'>HERE</a>.",
-				default:'$CA',
-				action:"bracket-option /sys/block/zram0/comp_algorithm",
-				values:['
-					for COMPALG in \`$BB cat /sys/block/zram0/comp_algorithm | $BB sed -e "s/\]//;s/\[//"\`; do
-						echo "\"$COMPALG\",";
-					done;
-				$BB echo '],
-				notify:[
-					{
-						on:APPLY,
-						do:[ RESET, REFRESH, APPLY ],
-						to:"zram /sys/devices/virtual/block/zram0/disksize"
-					}
-				]
-			}},'
-		fi`
-		`if [ -f "/sys/block/zram0/max_comp_streams" ]; then
-		MCS=\`$BB cat /sys/block/zram0/max_comp_streams\`;
-			$BB echo '{ SSeekBar:{
-				title:"Max Compression Streams",
-				description:"Applying a different option will reset Z-RAM. Can have N write operations (depending on size of streams list) executing in parallel.",
-				min:1,	max:5,
-				step:1,
-				default:'$MCS',
-				action:"generic /sys/block/zram0/max_comp_streams",
-				notify:[
-					{
-						on:APPLY,
-						do:[ RESET, REFRESH, APPLY ],
-						to:"zram /sys/devices/virtual/block/zram0/disksize"
-					}
-				]
-			}},'
-		fi`
-		`if [ -f "/sys/kernel/mm/ksm/run" ]; then
-		KSM=\`$BB cat /sys/kernel/mm/ksm/run\`
-		PTS=\`$BB cat /sys/kernel/mm/ksm/pages_to_scan\`
-		SLEEP=\`$BB cat /sys/kernel/mm/ksm/sleep_millisecs\`
-		DT=\`$BB cat /sys/kernel/mm/ksm/deferred_timer\`
+    name:内存管理,
+		elements:[
+			`if [ -f "/sys/devices/virtual/block/zram0/disksize" ]; then
+			ZRAM=\`$BB cat /sys/devices/virtual/block/zram0/disksize\`;
+			ZRAM=$((ZRAM / 1024 / 1024));
 			$BB echo '{ SPane:{
-				title:"Kernel Samepage Merging"
+				title:"Z-RAM",
+				description:"通过在 RAM 内的压缩块设备上分页，直到必须使用硬盘上虚拟内存的交换空间，以尽量避免在磁盘上进行分页，从而提高性能。Z-RAM可以在固有的内存上提供更多交换空间的功能。在内存紧张的时候可以节省内存空间，但压缩和解压内存分页上的数据会带来性能的消耗。假如你的内存不紧张的话，建议关闭。"
 			}},
-				{ SCheckBox:{
-					label:"Enable",
-					description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests. This increases CPU consumption but improves memory.",
-					default:'$KSM',
-					action:"generic /sys/kernel/mm/ksm/run"
-				}},
-				{ SLiveLabel:{
-					title:"KSM Stats:",
-					description:"Memory samepage merging is not quick process. So, stats may show 0 MB initially.",
-					refresh:3000,
-					action:"live KSMStats"
-				}},
-				{ SCheckBox:{
-					label:"Deferred Timer",
-					description:"If enabled, KSM thread will not wakeup CPU to carryout activities thus gaining battery while compromising slightly on memory that could have been saved.",
-					default:'$DT',
-					action:"generic /sys/kernel/mm/ksm/deferred_timer"
-				}},
 				{ SSeekBar:{
-					title:"Pages To Scan",
-					unit:" pages",
-					step:4,
-					min:4,
-					max:1024,
-					default:'$PTS',
-					action:"generic /sys/kernel/mm/ksm/pages_to_scan"
-				}},
-				{ SSeekBar:{
-					title:"Scan Delay Interval",
-					unit:" ms",
-					step:50,
-					min:50,
-					max:3000,
-					default:'$SLEEP',
-					action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+					unit:" MB",
+					step:1,
+					min:0,
+					max:1024, 
+					default:'$ZRAM',
+					action:"zram /sys/devices/virtual/block/zram0/disksize"
 				}},'
-		fi`
+			fi`
+			`if [ -f "/sys/block/zram0/comp_algorithm" ]; then
+			CA=\`$BB echo $(/res/synapse/actions/bracket-option /sys/block/zram0/comp_algorithm)\`;
+				$BB echo '{ SOptionList:{
+					title:"压缩算法",
+					description:"选用不同的压缩方式将重置Z-RAM。 LZ4算法倾向于更快的解压缩性能。更多信息请点击 : <a href='https://code.google.com/p/lz4/'>HERE</a>.",
+					default:'$CA',
+					action:"bracket-option /sys/block/zram0/comp_algorithm",
+					values:['
+						for COMPALG in \`$BB cat /sys/block/zram0/comp_algorithm | $BB sed -e "s/\]//;s/\[//"\`; do
+							echo "\"$COMPALG\",";
+						done;
+					$BB echo '],
+					notify:[
+						{
+							on:APPLY,
+							do:[ RESET, REFRESH, APPLY ],
+							to:"zram /sys/devices/virtual/block/zram0/disksize"
+						}
+					]
+				}},'
+			fi`
+			`if [ -f "/sys/block/zram0/max_comp_streams" ]; then
+			MCS=\`$BB cat /sys/block/zram0/max_comp_streams\`;
+				$BB echo '{ SSeekBar:{
+					title:"压缩流",
+					description:"选用不同的压缩流将重置Z-RAM。压缩流越大可并行同时压缩的操作越多，同时越损耗性能。",
+					min:1,
+					max:5,
+					step:1,
+					default:'$MCS',
+					action:"generic /sys/block/zram0/max_comp_streams",
+					notify:[
+						{
+							on:APPLY,
+							do:[ RESET, REFRESH, APPLY ],
+							to:"zram /sys/devices/virtual/block/zram0/disksize"
+						}
+					]
+				}},'
+			fi`
 			{ SPane:{
-				title:"Virtual Memory",
-				description:"Tune the operation of the VM subsystem of the Linux kernel and the writeout of dirty data to disk. Swappiness also affects Z-RAM operation on kernels which support swaps."
+				title:"虚拟内存",
+				description:"虚拟内存是指使用磁盘当作RAM的扩展，这样可用的内存的大小就相应地增大了。内核会将暂时不用的内存块的内容写到硬盘上，当需要用到原始的内容时，它们被重新读入内存。虚拟内存同时也支持跟 Z-RAM 的交换操作。"
 			}},
 				{ SSeekBar:{
-					title:"Dirty Background Ratio",
-					description:"Contains, as a % of total system memory, the number of pages at which the pdflush background writeback daemon will start writing out dirty data.",
+					title:"Dirty 数据后台占用比率",
+					description:"当空闲内存低于百分比时，内核必须将 Dirty 数据页面写回磁盘，以便释放内存。",
 					unit:"%",
 					step:1,
 					min:0,
@@ -119,8 +73,8 @@ cat << CTAG
 					action:"generic /proc/sys/vm/dirty_background_ratio"
 				}},
 				{ SSeekBar:{
-					title:"Dirty Ratio",
-					description:"Contains, as a % of total system memory, the number of pages at which a process which is generating disk writes will itself start writing out dirty data. Lower the amount of unwritten write cache to reduce lags when a huge write is required.",
+					title:"Dirty 数据比率",
+					description:"当达到设置占用内存的百分比，写入操作会堵塞，直至所有 Dirty 数据写入至文件。值越低未写入缓存越小，当大量的写入操作时可减小卡顿。",
 					unit:"%",
 					step:1,
 					min:0,
@@ -129,8 +83,8 @@ cat << CTAG
 					action:"generic /proc/sys/vm/dirty_ratio"
 				}},
 				{ SOptionList:{
-					title:"Drop Caches (Clear VFS Cache After Boot)",
-					description:"This option will force rebuild of file system cache based on actual app usage rather than boot/startup processes. NOTE: This process can take from 1-2 minutes (Enable for better file system read/write performance).",
+					title:"丢弃缓存 (启动后清除 VFS 缓存)",
+					description:"此操作会在系统引导过程中强制重建应用占用的系统缓存。注意：此操作可能需要 1-2 分钟，开启会带来更好的系统读写性能。",
 					default:0,
 					action:"dropcaches /res/synapse/files/dropcaches_prof",
 					values:{ 0:"Disabled", 1:"Enabled"
@@ -138,7 +92,7 @@ cat << CTAG
 				}},
 				`if [ -f "/proc/sys/vm/extra_free_kbytes" ]; then
 					$BB echo '{ SSeekBar:{
-						title:"Extra Free Kilobytes",
+						title:"额外释放的空间",
 						unit:" kB",
 						step:10,
 						min:0,
@@ -148,16 +102,16 @@ cat << CTAG
 					}},'
 				fi`
 				{ SOptionList:{
-					title:"Laptop Mode (Auto FS Writeback Delay Mode)",
-					description:"This option will delay the writebacks of file system bits cached in RAM while screen is ON (Enable for better performance @ slight risk of possible data loss if crashed or sudden loss of power).",
+					title:"笔记本模式（自动文件系统回写延迟模式）",
+					description:"此操作在屏幕开启时将内存中的缓存延迟写入到磁盘中（启用会带来更好的性能，但当电源或其他原因造成系统崩溃的时候可能造成数据丢失）。",
 					default:`$BB cat /proc/sys/vm/laptop_mode`,
 					action:"generic /proc/sys/vm/laptop_mode",
 					values:{ 0:"Disabled", 1:"Enabled"
 					}
 				}},
 				{ SSeekBar:{
-					title:"Swappiness",
-					description:"Controls the tendency of the kernel to move processes out of physical memory and onto the swap disk. Because disks are much slower than RAM, this can lead to slower response times for system and applications if processes are too aggressively moved out of memory.",
+					title:"磁盘虚拟内存",
+					description:"控制物理内存和内置储存器之间的交换趋势。由于内置储存器比内存慢很多，如果交换过于积极，可能会导致系统或应用程序较慢的响应时间。",
 					unit:"%",
 					step:1,
 					min:0,
@@ -166,8 +120,8 @@ cat << CTAG
 					action:"generic /proc/sys/vm/swappiness"
 				}},
 				{ SSeekBar:{
-					title:"VFS Cache Pressure",
-					description:"Controls the tendency of the kernel to reclaim the memory which is used for caching of directory and inode objects. Lower = prefer to retain dentry and inode cache, higher = prefer to reclaim dentry and inodes cache.",
+					title:"VFS 缓存压力",
+					description:"控制回收内存中目录和文件索引等可回收空间的趋势。低 = 倾向保留目录和文件索引信息，高 = 倾向收回的目录和文件索引信息。",
 					unit:"%",
 					step:1,
 					min:0,
@@ -177,12 +131,12 @@ cat << CTAG
 				}},
 			`if [ -f "/sys/module/lowmemorykiller/parameters/minfree" ]; then
 				$BB echo '{ SPane:{
-					title:"Low Memory Killer",
-					description:"LMK Minfree controls how much memory each app type can hold, and is responsible for memory management for multitasking."
+					title:"LMK低内存清理",
+					description:"LMK Minfree 控制每个app可以占用多少内存，并负责多任务内存管理。"
 				}},
 				{ SOptionList:{
-					title:"LMK Profile",
-					description:"This option will auto-tune LMK minfree values as per selected profile.",
+					title:"LMK 配置",
+					description:"你可以选择LMK的配置文件。",
 					default:Custom,
 					action:"lmk_profile /res/synapse/files/lmk_prof",
 					values:[ Custom, Low, Medium, Default, Aggressive, Exterminate,
@@ -206,17 +160,17 @@ cat << CTAG
 						$BB echo '{ SSeekBar:{ '
 							case $LMK in
 								1)
-									$BB echo 'title:"Foreground App", description:"The application currenty on the screen and running.", default:6' ;;
+									$BB echo 'title:"前台程序", description:"当前在你所看到的界面上运行的程序。", default:6' ;;
 								2)
-									$BB echo 'title:"Visible App", description:"The application that is open and running in background.", default:8' ;;
+									$BB echo 'title:"可见应用", description:"在状态栏或者屏幕叠加层上显示的应用。", default:8' ;;
 								3)
-									$BB echo 'title:"Secondary Server", description:"This is a service an application needs that is alive and ready.", default:16' ;;
+									$BB echo 'title:"次要服务", description:"一些后台随时准备启动的应用服务。", default:16' ;;
 								4)
-									$BB echo 'title:"Hidden App", description:"An idle process that wakes up on application request.", default:64' ;;
+									$BB echo 'title:"隐蔽程序", description:"等待被唤醒的后台应用。", default:64' ;;
 								5)
-									$BB echo 'title:"Content Provider", description:"Apps that provide data (content) to the system.", default:112' ;;
+									$BB echo 'title:"内容提供服务", description:"程序之间共享数据接口程序。", default:112' ;;
 								6)
-									$BB echo 'title:"Empty App", description:"Apps closed by the user but ready to run.", default:124' ;;
+									$BB echo 'title:"空闲程序", description:"被用户关闭的程序，即后台缓存。", default:124' ;;
 							esac
 						$BB echo ', action:"lmk '${LMK}'",
 						unit:" MB", min:1, max:300 }},'

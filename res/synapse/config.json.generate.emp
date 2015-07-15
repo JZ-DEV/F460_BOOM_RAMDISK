@@ -1,0 +1,8 @@
+cat << CTAG
+{
+		name:,
+			elements:[
+
+		]
+}
+CTAG

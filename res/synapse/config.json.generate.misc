@@ -2,44 +2,6 @@ cat << CTAG
 {
     name:附加设置,
 		elements:[
-			`if [ -d "/sys/kernel/charge_levels/" ]; then
-				if [ -f "/sys/kernel/charge_levels/charge_info" ]; then
-					$BB echo '{ SPane:{
-						title:"充电输入电流控制："
-						}},
-						{ SLiveLabel:{
-							refresh:5000,
-							style:italic,
-							action:"live ChargeCurrent"
-						}},'
-				fi
-				if [ -f "/sys/kernel/charge_levels/charge_level_ac" ]; then
-				ACCL=\`$BB cat /sys/kernel/charge_levels/charge_level_ac\`
-					$BB echo '{ SSeekBar:{
-						title:"交流电控制",
-						description:"设置交流电源允许的输入电流值 (0 = 出厂默认值)。",
-						unit:" mA",
-						min:0,
-						max:2200,
-						step:100,
-						default:'$ACCL',
-						action:"generic /sys/kernel/charge_levels/charge_level_ac"
-						}},'
-				fi
-				if [ -f "/sys/kernel/charge_levels/charge_level_usb" ]; then
-				USBCL=\`$BB cat /sys/kernel/charge_levels/charge_level_usb\`
-					$BB echo '{ SSeekBar:{
-						title:"USB 充电控制",
-						description:"设置 USB 允许的输入电流值 (0 = 出厂默认值)。",
-						unit:" mA",
-						min:0,
-						max:1600,
-						step:100,
-						default:'$USBCL',
-						action:"generic /sys/kernel/charge_levels/charge_level_usb"
-						}},'
-				fi
-			fi`
 			{ STitleBar:{
 				title:"TCP 拥塞控制"
 			}},
@@ -51,46 +13,22 @@ cat << CTAG
 						`sh $DEVICE TCPCongestionList`
 					]
 				}},
-			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
-			FSYNC=\`bool /sys/module/sync/parameters/fsync_enabled\`
-				$BB echo '{ SPane:{
-					title:"FSYNC"
-				}},
-					{ SCheckBox:{
-						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
-						label:"Enable",
-						default:'$FSYNC',
-						action:"boolean /sys/module/sync/parameters/fsync_enabled"
-					}},'
-			fi`
-			`if [ -f "/sys/class/misc/fsynccontrol/fsync_enabled" ]; then
-			FSYNC=\`$BB cat /sys/class/misc/fsynccontrol/fsync_enabled\`
-				$BB echo '{ SPane:{
-					title:"FSYNC"
-				}},
-					{ SCheckBox:{
-						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
-						label:"Enable",
-						default:'$FSYNC',
-						action:"generic /sys/class/misc/fsynccontrol/fsync_enabled"
-					}},'
-			fi`
-			`if [ -f "/sys/devices/virtual/timed_output/vibrator/vtg_level" ]; then
-			VTGLVL=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_level\`
-			VTGMIN=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_min\`
-			VTGMAX=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_max\`
-				$BB echo '{ SPane:{
-					title:"震动强度设定"
-				}},
-					{ SSeekBar:{
-						description:"设置内置振动器的强度。",
-						step:1,
-						min:'$VTGMIN',
-						max:'$VTGMAX',
-						default:'$VTGLVL',
-						action:"generic /sys/devices/virtual/timed_output/vibrator/vtg_level"
-					}},'
-			fi`
+			{ STitleBar:{
+				title:"DHCP修复"
+			}},
+					{ SButton:{
+						label:"DHCP修复",
+						description:"如果你发现某些热点连接不上或者正在获取地址，可以尝试此按钮。",
+						action:"fixdhcp"
+					}},
+			{ STitleBar:{
+				title:"DHCP修复"
+			}},
+					{ SButton:{
+						label:"电池计数重置",
+						description:"当你发现电池百分比计数不正确时，可以按此按钮修复。",
+						action:"fixbattery"
+					}},
 		]
 }
 CTAG

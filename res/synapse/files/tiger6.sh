@@ -88,6 +88,9 @@ case "$1" in
 			UTS="@n${UT}"
 			if [ "${temp}" -ge "${limit_temp_degC}" ];then
 				DLST="$(expr ${limit_safe_temp_degC} - ${temp})ºC";
+				if [ "`expr ${limit_safe_temp_degC} - ${temp}`" -le "0" ];then
+					DLST="0";
+				fi
 				Thermalstats="已触发智能温控@n距离极限降频还有：${DLST}";
 			else
 				Thermalstats=`$BB echo "目前未触发温控@nIntelli温控监视中"`;

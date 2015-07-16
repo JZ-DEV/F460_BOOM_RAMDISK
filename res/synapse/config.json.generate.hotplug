@@ -361,7 +361,7 @@ cat << CTAG
 				if [ -f "$BHC/twts_threshold_1" ]; then
 				TWTS1=\`$BB cat $BHC/twts_threshold_1\`
 					$BB echo '{ SSeekBar:{
-							title:"关闭 CPU0阈值",
+							title:"关闭 CPU0的时间阈值",
 							description:"必须持续此时间值才能关闭 CPU0",
 							unit:" ms",
 							min:0,

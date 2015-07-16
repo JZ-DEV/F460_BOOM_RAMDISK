@@ -253,7 +253,7 @@ cat << CTAG
 				NWNS0=\`$BB cat $BHC/nwns_threshold_0\`
 					$BB echo '{ SSeekBar:{
 							title:"启用 CPU1 的请求阈值",
-							description:"如果这个阈值达到，CPU1 将被加载。",
+							description:"如果cpu0负载增加到该数值（单位%），CPU1 将会启用。",
 							min:0,
 							max:100,
 							step:1,
@@ -277,7 +277,7 @@ cat << CTAG
 				NWNS2=\`$BB cat $BHC/nwns_threshold_2\`
 					$BB echo '{ SSeekBar:{
 							title:"启用 CPU2 的请求阈值",
-							description:"如果这个阈值达到，CPU2 将被加载。",
+							description:"如果cpu1负载增加到该数值（单位%），CPU2 将会启用。",
 							min:0,
 							max:100,
 							step:1,
@@ -288,8 +288,8 @@ cat << CTAG
 				if [ -f "$BHC/nwns_threshold_3" ]; then
 				NWNS3=\`$BB cat $BHC/nwns_threshold_3\`
 					$BB echo '{ SSeekBar:{
-							title:"关闭 CPU1 的请求阈值",
-							description:"如果这个阈值达到，CPU1 将被关闭。",
+							title:"关闭 CPU2 的请求阈值",
+							description:"如果cpu1负载减小到该数值（单位%），CPU2 将被关闭。",
 							min:0,
 							max:100,
 							step:1,
@@ -301,7 +301,7 @@ cat << CTAG
 				NWNS4=\`$BB cat $BHC/nwns_threshold_4\`
 					$BB echo '{ SSeekBar:{
 							title:"启用 CPU3 的请求阈值",
-							description:"如果这个阈值达到，CPU3 将被加载。",
+							description:"如果cpu2负载增加到该数值（单位%），CPU3 将会被启用。",
 							min:0,
 							max:100,
 							step:1,
@@ -312,8 +312,8 @@ cat << CTAG
 				if [ -f "$BHC/nwns_threshold_5" ]; then
 				NWNS5=\`$BB cat $BHC/nwns_threshold_5\`
 					$BB echo '{ SSeekBar:{
-							title:"关闭 CPU2 的请求阈值",
-							description:"如果这个阈值达到，CPU2 将被关闭。",
+							title:"关闭 CPU3 的请求阈值",
+							description:"如果cpu2负载减小到该数值（单位%），CPU3 将被关闭。",
 							min:0,
 							max:100,
 							step:1,

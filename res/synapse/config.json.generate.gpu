@@ -59,7 +59,7 @@ cat << CTAG
 					LAZ=\`$BB cat $SGA/simple_laziness\`
 					$BB echo '{ SSeekBar:{
 						title:"积极性",
-						description:"调节调速器忽略降速请求的次数，数值越高性能越好，同时电池续航越短。",
+						description:"调节调速器忽略降速请求的次数，数值越低性能越好，同时电池续航越短。",
 						default:'$LAZ',
 						action:"generic '$SGA'/simple_laziness",
 						min:0,

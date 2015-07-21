@@ -5,7 +5,7 @@ cat << CTAG
 	name:系统状态,
 		elements:[
 			{ SPane:{
-				title:"Linux版本\ JZ内核版本1.0",
+				title:"Linux版本  JZ内核版本1.0",
 				description:"`$BB cat /proc/version`"
 			}},
 			{ SPane:{

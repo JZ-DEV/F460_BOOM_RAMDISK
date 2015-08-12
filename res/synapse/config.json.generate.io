@@ -51,11 +51,11 @@ cat << CTAG
 				`if [ -f "/sys/devices/msm_sdcc.1/mmc_host/mmc0/clk_scaling/scale_down_in_low_wr_load" ]; then
 				MMCC=\`$BB cat /sys/devices/msm_sdcc.1/mmc_host/mmc0/clk_scaling/scale_down_in_low_wr_load\`
 				$BB echo '{ SPane:{
-					title:"Memory Card Clock Scaling Control"
+					title:"内置存储动态频率控制"
 				}},
 					{ SCheckBox:{
-						label:"MMC Clock Scaling Control",
-						description:"Optimize clock scaling during write requests. The default value for it is 0. In case we want to gain performance over power they should set it to 1.",
+						label:"MMC频率控制",
+						description:"在请求时优化MMC频率。默认为0，如果想提升性能，请选择1。",
 						default:'$MMCC',
 						action:"generic /sys/devices/msm_sdcc.1/mmc_host/mmc0/clk_scaling/scale_down_in_low_wr_load"
 					}},'

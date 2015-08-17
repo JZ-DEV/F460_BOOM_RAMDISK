@@ -129,53 +129,7 @@ cat << CTAG
 					default:`$BB cat /proc/sys/vm/vfs_cache_pressure`,
 					action:"generic /proc/sys/vm/vfs_cache_pressure"
 				}},
-			`if [ -f "/sys/module/lowmemorykiller/parameters/minfree" ]; then
-				$BB echo '{ SPane:{
-					title:"LMK低内存清理",
-					description:"LMK Minfree 控制每个app可以占用多少内存，并负责多任务内存管理。"
-				}},
-				{ SOptionList:{
-					title:"LMK 配置",
-					description:"你可以选择LMK的配置文件。",
-					default:Custom,
-					action:"lmk_profile /res/synapse/files/lmk_prof",
-					values:[ Custom, Low, Medium, Default, Aggressive, Exterminate,
-					],
-					notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:[ 
-										"lmk 1",
-										"lmk 2",
-										"lmk 3",
-										"lmk 4",
-										"lmk 5",
-										"lmk 6"
-								],
-							}
-					]
-				}},'
-					for LMK in 1 2 3 4 5 6; do
-						$BB echo '{ SSeekBar:{ '
-							case $LMK in
-								1)
-									$BB echo 'title:"前台程序", description:"当前在你所看到的界面上运行的程序。", default:6' ;;
-								2)
-									$BB echo 'title:"可见应用", description:"在状态栏或者屏幕叠加层上显示的应用。", default:8' ;;
-								3)
-									$BB echo 'title:"次要服务", description:"一些后台随时准备启动的应用服务。", default:16' ;;
-								4)
-									$BB echo 'title:"隐蔽程序", description:"等待被唤醒的后台应用。", default:64' ;;
-								5)
-									$BB echo 'title:"内容提供服务", description:"程序之间共享数据接口程序。", default:112' ;;
-								6)
-									$BB echo 'title:"空闲程序", description:"被用户关闭的程序，即后台缓存。", default:124' ;;
-							esac
-						$BB echo ', action:"lmk '${LMK}'",
-						unit:" MB", min:1, max:300 }},'
-					done
-			fi`
-    ]
+
+		]
 }
 CTAG

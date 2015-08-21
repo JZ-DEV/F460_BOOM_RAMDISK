@@ -1,0 +1,18 @@
+cat << CTAG
+{
+	name:在线升级,
+		elements:[
+			{ SPane:{
+				title:"下载/更新",
+			}},
+			{ SButton:{
+				label:"更新内容",
+				action:"update commit"
+			}},
+			{ SButton:{
+				label:"下载并更新内核",
+				action:"update download"
+			}},
+		]
+}
+CTAG

@@ -124,6 +124,7 @@ case $1 in
 		else
 			echo "0";
 		fi;
+	;;
 esac;
 
 if [ "$1" == "core" ]; then

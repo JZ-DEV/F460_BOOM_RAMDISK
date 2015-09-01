@@ -1,0 +1,251 @@
+#!/sbin/busybox sh
+BB=/sbin/busybox;
+command_fo=/res/synapse/actions;
+
+get_Ulow()
+{
+	#thermal-engine
+	thermal-engine_control=1;
+	
+	#cpu
+	cpu_max_freq=1574400; #此值从cpu可见频率查看
+	input_boost_freq=1267200; #此值从cpu可见频率查看
+	power_efficient=Y;
+	maxcoreslimit=3;
+	
+	#cache
+	bw_max_freq=12145; #此值从bw可见频率查看
+	l2_max_freq=1267200; #此值从l2可见频率查看
+	bw_gov=cpufreq;
+	l2_gov=cpufreq;
+	
+	#gpu
+	gpu_pwr=6;
+	gpu_max_freq=240000000;
+	adreno_idler_active=Y;
+	
+	#intellithermal
+	limit_temp_degC=53;
+	limit_safe_temp_degC=58;
+	temp_hysteresis_degC=2;
+	temp_safety=1;
+	freq_step=2;
+	thermal_limit_low=7;
+	core_limit_temp_degC=68;
+	core_control_mask=12;
+	therm_reset_temp_degC=115;
+}
+
+get_low()
+{
+	#thermal-engine
+	thermal-engine_control=1;
+	
+	#cpu
+	cpu_max_freq=1958400; #此值从cpu可见频率查看
+	input_boost_freq=1497600; #此值从cpu可见频率查看
+	power_efficient=Y;
+	maxcoreslimit=4;
+	
+	#cache
+	bw_max_freq=12145; #此值从bw可见频率查看
+	l2_max_freq=1497600; #此值从l2可见频率查看
+	bw_gov=cpubw_hwmon;
+	l2_gov=cache_hwmon;
+	
+	#gpu
+	gpu_pwr=3;
+	gpu_max_freq=500000000;
+	adreno_idler_active=Y;
+	
+	#intellithermal
+	limit_temp_degC=56;
+	limit_safe_temp_degC=60;
+	temp_hysteresis_degC=3;
+	temp_safety=1;
+	freq_step=2;
+	thermal_limit_low=9;
+	core_limit_temp_degC=78;
+	core_control_mask=12;
+	therm_reset_temp_degC=115;
+}
+
+get_ban()
+{
+	#thermal-engine
+	thermal-engine_control=1;
+	
+	#cpu
+	cpu_max_freq=2649600; #此值从cpu可见频率查看
+	input_boost_freq=1497600; #此值从cpu可见频率查看
+	power_efficient=N;
+	maxcoreslimit=4;
+	
+	#cache
+	bw_max_freq=16650; #此值从bw可见频率查看
+	l2_max_freq=1728000; #此值从l2可见频率查看
+	bw_gov=cpubw_hwmon;
+	l2_gov=cache_hwmon;
+	
+	#gpu
+	gpu_pwr=1;
+	gpu_max_freq=600000000;
+	adreno_idler_active=N;
+	
+	#intellithermal
+	limit_temp_degC=60;
+	limit_safe_temp_degC=70;
+	temp_hysteresis_degC=5;
+	temp_safety=1;
+	freq_step=1;
+	thermal_limit_low=9;
+	core_limit_temp_degC=78;
+	core_control_mask=8;
+	therm_reset_temp_degC=120;
+}
+
+get_high()
+{
+	#thermal-engine
+	thermal-engine_control=1;
+	
+	#cpu
+	cpu_max_freq=2803200; #此值从cpu可见频率查看
+	input_boost_freq=1497600; #此值从cpu可见频率查看
+	power_efficient=N;
+	maxcoreslimit=4;
+	
+	#cache
+	bw_max_freq=16650; #此值从bw可见频率查看
+	l2_max_freq=1958400; #此值从l2可见频率查看
+	bw_gov=cpubw_hwmon;
+	l2_gov=cache_hwmon;
+	
+	#gpu
+	gpu_pwr=0;
+	gpu_max_freq=683000000;
+	adreno_idler_active=N;
+	
+	#intellithermal
+	limit_temp_degC=70;
+	limit_safe_temp_degC=80;
+	temp_hysteresis_degC=6;
+	temp_safety=1;
+	freq_step=1;
+	thermal_limit_low=9;
+	core_limit_temp_degC=78;
+	core_control_mask=8;
+	therm_reset_temp_degC=125;
+}
+
+get_Uhigh()
+{
+	#thermal-engine
+	thermal-engine_control=0;
+	
+	#cpu
+	cpu_max_freq=2880000; #此值从cpu可见频率查看
+	input_boost_freq=1497600; #此值从cpu可见频率查看
+	power_efficient=Y;
+	maxcoreslimit=4;
+	
+	#cache
+	bw_max_freq=16650; #此值从bw可见频率查看
+	l2_max_freq=1958400; #此值从l2可见频率查看
+	bw_gov=cpubw_hwmon;
+	l2_gov=cache_hwmon;
+	
+	#gpu
+	gpu_pwr=0;
+	gpu_max_freq=683000000;
+	adreno_idler_active=Y;
+	
+	#intellithermal
+	limit_temp_degC=85;
+	limit_safe_temp_degC=90;
+	temp_hysteresis_degC=6;
+	temp_safety=0;
+	freq_step=1;
+	thermal_limit_low=10;
+	core_limit_temp_degC=90;
+	core_control_mask=0;
+	therm_reset_temp_degC=130;
+}
+
+wr_sys()
+{
+	echo "${2}" > ${1};
+}
+
+set_mode()
+{
+	#thermal-engine
+	${command_fo}/intellithermal thermalserver ${thermal-engine_control};
+	
+	#cpu
+	${command_fo}/setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq ${cpu_max_freq};
+	wr_sys /sys/module/cpu_boost/parameters/input_boost_freq ${input_boost_freq};
+	wr_sys /sys/module/workqueue/parameters/power_efficient ${power_efficient};
+	wr_sys /sys/kernel/msm_mpdecision/conf/enabled 0;
+	wr_sys /sys/kernel/alucard_hotplug/hotplug_enable 1;
+	wr_sys /sys/kernel/alucard_hotplug/maxcoreslimit ${maxcoreslimit};
+	
+	#cache
+	wr_sys /sys/class/devfreq/qcom,cpubw.35/max_freq ${bw_max_freq};
+	wr_sys /sys/class/devfreq/qcom,cache.34/max_freq ${l2_max_freq};
+	wr_sys /sys/class/devfreq/qcom,cpubw.35/governor ${bw_gov};
+	wr_sys /sys/class/devfreq/qcom,cache.34/governor ${l2_gov};
+	
+	#gpu
+	wr_sys /sys/class/kgsl/kgsl-3d0/max_pwrlevel ${gpu_pwr};
+	wr_sys /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/max_freq ${gpu_max_freq};
+	wr_sys /sys/class/kgsl/kgsl-3d0/max_gpuclk ${gpu_max_freq};
+	wr_sys /sys/module/adreno_idler/parameters/adreno_idler_active ${adreno_idler_active};
+	
+	#intellithermal
+	wr_sys /sys/module/msm_thermal/parameters/intelli_enabled 1;
+	wr_sys /sys/module/msm_thermal/parameters/limit_temp_degC ${limit_temp_degC};
+	wr_sys /sys/module/msm_thermal/parameters/temp_hysteresis_degC ${temp_hysteresis_degC};
+	wr_sys /sys/module/msm_thermal/parameters/temp_safety ${temp_safety};
+	wr_sys /sys/module/msm_thermal/parameters/limit_safe_temp_degC ${limit_safe_temp_degC};
+	wr_sys /sys/module/msm_thermal/parameters/freq_step ${freq_step};
+	wr_sys /sys/module/msm_thermal/parameters/core_limit_temp_degC ${core_limit_temp_degC};
+	wr_sys /sys/module/msm_thermal/parameters/thermal_limit_low ${thermal_limit_low};
+	wr_sys /sys/module/msm_thermal/parameters/core_control_mask ${core_control_mask};
+	wr_sys /sys/module/msm_thermal/parameters/therm_reset_temp_degC ${therm_reset_temp_degC};
+}
+
+flash_synapse()
+{
+	am force-stop com.af.synapse 2> /dev/null;
+	sleep 1;
+	am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
+}
+
+case $1 in 
+	Ulow)
+		get_Ulow;
+		set_mode;
+		flash_synapse;
+	;;	
+	low)
+		get_low;
+		set_mode;
+		flash_synapse;
+	;;
+	ban)
+		get_ban;
+		set_mode;
+		flash_synapse;
+	;;
+	high)
+		get_high;
+		set_mode;
+		flash_synapse;
+	;;
+	Uhigh)
+		get_Uhigh;
+		set_mode;
+		flash_synapse;
+	;;
+esac;

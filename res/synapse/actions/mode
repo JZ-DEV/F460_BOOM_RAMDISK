@@ -30,7 +30,7 @@ get_Ulow()
 	temp_hysteresis_degC=2;
 	temp_safety=1;
 	freq_step=2;
-	thermal_limit_low=7;
+	thermal_limit_low=8;
 	core_limit_temp_degC=68;
 	core_control_mask=12;
 	therm_reset_temp_degC=115;

@@ -13,30 +13,43 @@ cat << CTAG
 				{ SPane:{
 					title:"模式切换",
 					description:"此选项为一键切换选项，不熟悉内核配置的机油可以使用此功能切换内核模式，切换完成后synapse会重启，此时按下√即可生效（会修改你原先的内核配置，请备份后操作）。"
+				}},				
+				{ STitleBar:{
+					title:,
+				}},
+				{ SDescription:{
+					description:"在极端的情况下，切换此模式可延长使用时间，但是会影响机器流畅性。",
 				}},
 				{ SButton:{
 					label:"极限省电模式",
-					description:"在极端的情况下，切换此模式可延长使用时间，但是会影响机器流畅性。",
 					action:"mode Ulow"
+				}},
+				{ SDescription:{
+					description:"此模式接近官方配置，发热和电力消耗较小，可以应付中小型游戏以及日常操作。",
 				}},
 				{ SButton:{
 					label:"省电模式",
-					description:"此模式接近官方配置，发热和电力消耗较小，可以应付中小型游戏以及日常操作。",
 					action:"mode low"
+				}},
+				{ SDescription:{
+					description:"JZ内核默认配置，偏向性能，发热中等，流畅和发热比较平衡的一个配置，比官方略热。",
 				}},
 				{ SButton:{
 					label:"平衡模式",
-					description:"JZ内核默认配置，偏向性能，发热中等。",
 					action:"mode ban"
+				}},
+				{ SDescription:{
+					description:"运行大型游戏，极致流畅的系统体验，但是功耗和发热较大。请在环境温度较低的情况下使用。",
 				}},
 				{ SButton:{
 					label:"性能模式",
-					description:"运行大型游戏，极致流畅的系统体验，但是功耗和发热较大。请在环境温度较低的情况下使用。",
 					action:"mode high"
+				}},
+				{ SDescription:{
+					description:"为跑分以及游戏优化配置，注意，此选项会极大提升发热量和功耗，请斟酌使用。",
 				}},
 				{ SButton:{
 					label:"极限性能模式",
-					description:"为跑分以及游戏优化配置，注意，此选项会极大提升发热量和功耗，请斟酌使用。",
 					action:"mode Uhigh"
 				}},
 			]

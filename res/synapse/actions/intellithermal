@@ -111,7 +111,7 @@ case $1 in
 		if [[ ! -z "$2" ]]; then
 				if [ $2 -eq "1" ];then
 					stop thermal-engine;
-					sleep 2;
+					sleep 1;
 					start thermal-engine;
 				fi
 				if [ $2 -eq "0" ];then

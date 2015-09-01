@@ -14,21 +14,18 @@ cat << CTAG
 					]
 				}},
 			{ STitleBar:{
-				title:"DHCP修复"
+				title:"其他设置"
 			}},
 					{ SButton:{
 						label:"DHCP修复",
 						description:"如果你发现某些热点连接不上或者正在获取地址，可以尝试此按钮。",
 						action:"fixdhcp"
 					}},
-			{ STitleBar:{
-				title:"DHCP修复"
-			}},
 					{ SButton:{
 						label:"电池计数重置",
 						description:"当你发现电池百分比计数不正确时，可以按此按钮修复。",
 						action:"fixbattery"
 					}},
-		]
+				]
 }
 CTAG

@@ -1,0 +1,19 @@
+BB=/sbin/busybox;
+
+
+set_resolution()
+{
+	wm size ${1}
+}
+
+case $1 in 
+	stock)
+	set_resolution 1440x2560;
+	;;
+	FHD)
+	set_resolution 1080x1920;
+	;;
+	HD)
+	set_resolution 720x1280;
+	;;
+esac;

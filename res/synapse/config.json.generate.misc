@@ -37,6 +37,22 @@ cat << CTAG
 				label:"页面回收",
 				action:"process_reclaim"
 			}},
+			{ STitleBar:{
+				title:"分辨率修改"
+				description:"修改分辨率以后会出现布局变化，有些桌面的布局也会被打乱。",
+			}},
+			{ SButton:{
+				label:"2K（官方）",
+				action:"resolution stock"
+			}},
+			{ SButton:{
+				label:"1080（1920*1080）",
+				action:"resolution FHD"
+			}},
+			{ SButton:{
+				label:"720（1280*720）",
+				action:"resolution HD"
+			}},
 		]
 }
 CTAG

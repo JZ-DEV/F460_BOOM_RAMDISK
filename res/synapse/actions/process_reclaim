@@ -1,0 +1,5 @@
+BB=/sbin/busybox;
+
+$BB echo all > /proc/PID/reclaim;
+$BB echo "页面回收已执行";
+	

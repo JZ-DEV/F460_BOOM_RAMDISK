@@ -201,19 +201,6 @@ cat << CTAG
 						}
 					}},'
 				fi
-				if [ -f "$MSMTHERMAL/parameters/therm_reset_temp_degC" ]; then
-				TRTD=\`$BB cat $MSMTHERMAL/parameters/therm_reset_temp_degC\`;
-					$BB echo '	{ SSeekBar:{
-						title:"极限重启温度（谨慎调整）",
-						description:"当温控传感器温度大于此值时机器重新启动，如果温度调节不当，可能会损坏硬件或者屏幕.",
-						unit:"ºC",
-						step:1,
-						min:85,
-						max:135,
-						default:'$TRTD',
-						action:"generic '$MSMTHERMAL'/parameters/therm_reset_temp_degC"
-					}},'
-				fi
 			fi`
 		]
 }

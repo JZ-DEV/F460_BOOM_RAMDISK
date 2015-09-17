@@ -9,15 +9,18 @@ get_Ulow()
 	
 	#cpu
 	cpu_max_freq=1574400; #此值从cpu可见频率查看
+	cpu_min_freq=300000;
 	input_boost_freq=1267200; #此值从cpu可见频率查看
 	power_efficient=Y;
 	maxcoreslimit=3;
 	
 	#cache
-	bw_max_freq=12145; #此值从bw可见频率查看
+	bw_max_freq=10101; #此值从bw可见频率查看
+	bw_min_freq=762; #此值从bw可见频率查看
 	l2_max_freq=1267200; #此值从l2可见频率查看
-	bw_gov=cpufreq;
-	l2_gov=cpufreq;
+	l2_min_freq=300000; #此值从l2可见频率查看
+	bw_gov=cpubw_hwmon;
+	l2_gov=cache_hwmon;
 	
 	#gpu
 	gpu_pwr=6;
@@ -33,7 +36,6 @@ get_Ulow()
 	thermal_limit_low=8;
 	core_limit_temp_degC=68;
 	core_control_mask=12;
-	therm_reset_temp_degC=115;
 }
 
 get_low()
@@ -43,13 +45,16 @@ get_low()
 	
 	#cpu
 	cpu_max_freq=1958400; #此值从cpu可见频率查看
+	cpu_min_freq=300000;
 	input_boost_freq=1497600; #此值从cpu可见频率查看
 	power_efficient=Y;
 	maxcoreslimit=4;
 	
 	#cache
 	bw_max_freq=12145; #此值从bw可见频率查看
+	bw_min_freq=762; #此值从bw可见频率查看
 	l2_max_freq=1497600; #此值从l2可见频率查看
+	l2_min_freq=300000; #此值从l2可见频率查看
 	bw_gov=cpubw_hwmon;
 	l2_gov=cache_hwmon;
 	
@@ -67,7 +72,6 @@ get_low()
 	thermal_limit_low=9;
 	core_limit_temp_degC=78;
 	core_control_mask=12;
-	therm_reset_temp_degC=115;
 }
 
 get_ban()
@@ -77,13 +81,16 @@ get_ban()
 	
 	#cpu
 	cpu_max_freq=2649600; #此值从cpu可见频率查看
+	cpu_min_freq=300000;
 	input_boost_freq=1497600; #此值从cpu可见频率查看
 	power_efficient=N;
 	maxcoreslimit=4;
 	
 	#cache
 	bw_max_freq=16650; #此值从bw可见频率查看
+	bw_min_freq=762; #此值从bw可见频率查看
 	l2_max_freq=1728000; #此值从l2可见频率查看
+	l2_min_freq=300000; #此值从l2可见频率查看
 	bw_gov=cpubw_hwmon;
 	l2_gov=cache_hwmon;
 	
@@ -101,7 +108,6 @@ get_ban()
 	thermal_limit_low=9;
 	core_limit_temp_degC=78;
 	core_control_mask=8;
-	therm_reset_temp_degC=120;
 }
 
 get_high()
@@ -111,13 +117,16 @@ get_high()
 	
 	#cpu
 	cpu_max_freq=2803200; #此值从cpu可见频率查看
+	cpu_min_freq=300000;
 	input_boost_freq=1497600; #此值从cpu可见频率查看
 	power_efficient=N;
 	maxcoreslimit=4;
 	
 	#cache
 	bw_max_freq=16650; #此值从bw可见频率查看
+	bw_min_freq=762; #此值从bw可见频率查看
 	l2_max_freq=1958400; #此值从l2可见频率查看
+	l2_min_freq=300000; #此值从l2可见频率查看
 	bw_gov=cpubw_hwmon;
 	l2_gov=cache_hwmon;
 	
@@ -135,7 +144,6 @@ get_high()
 	thermal_limit_low=9;
 	core_limit_temp_degC=78;
 	core_control_mask=8;
-	therm_reset_temp_degC=125;
 }
 
 get_Uhigh()
@@ -145,20 +153,23 @@ get_Uhigh()
 	
 	#cpu
 	cpu_max_freq=2880000; #此值从cpu可见频率查看
+	cpu_min_freq=300000;
 	input_boost_freq=1497600; #此值从cpu可见频率查看
-	power_efficient=Y;
+	power_efficient=N;
 	maxcoreslimit=4;
 	
 	#cache
 	bw_max_freq=16650; #此值从bw可见频率查看
+	bw_min_freq=762; #此值从bw可见频率查看
 	l2_max_freq=1958400; #此值从l2可见频率查看
+	l2_min_freq=300000; #此值从l2可见频率查看
 	bw_gov=cpubw_hwmon;
 	l2_gov=cache_hwmon;
 	
 	#gpu
 	gpu_pwr=0;
 	gpu_max_freq=683000000;
-	adreno_idler_active=Y;
+	adreno_idler_active=N;
 	
 	#intellithermal
 	limit_temp_degC=85;
@@ -166,10 +177,9 @@ get_Uhigh()
 	temp_hysteresis_degC=6;
 	temp_safety=0;
 	freq_step=1;
-	thermal_limit_low=10;
+	thermal_limit_low=9;
 	core_limit_temp_degC=90;
 	core_control_mask=0;
-	therm_reset_temp_degC=130;
 }
 
 wr_sys()
@@ -184,6 +194,7 @@ set_mode()
 	
 	#cpu
 	${command_fo}/setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq ${cpu_max_freq};
+	${command_fo}/setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq ${cpu_min_freq};
 	wr_sys /sys/module/cpu_boost/parameters/input_boost_freq ${input_boost_freq};
 	wr_sys /sys/module/workqueue/parameters/power_efficient ${power_efficient};
 	wr_sys /sys/kernel/msm_mpdecision/conf/enabled 0;
@@ -192,7 +203,9 @@ set_mode()
 	
 	#cache
 	wr_sys /sys/class/devfreq/qcom,cpubw.35/max_freq ${bw_max_freq};
+	wr_sys /sys/class/devfreq/qcom,cpubw.35/min_freq ${bw_min_freq};
 	wr_sys /sys/class/devfreq/qcom,cache.34/max_freq ${l2_max_freq};
+	wr_sys /sys/class/devfreq/qcom,cache.34/min_freq ${l2_min_freq};
 	wr_sys /sys/class/devfreq/qcom,cpubw.35/governor ${bw_gov};
 	wr_sys /sys/class/devfreq/qcom,cache.34/governor ${l2_gov};
 	
@@ -212,7 +225,6 @@ set_mode()
 	wr_sys /sys/module/msm_thermal/parameters/core_limit_temp_degC ${core_limit_temp_degC};
 	wr_sys /sys/module/msm_thermal/parameters/thermal_limit_low ${thermal_limit_low};
 	wr_sys /sys/module/msm_thermal/parameters/core_control_mask ${core_control_mask};
-	wr_sys /sys/module/msm_thermal/parameters/therm_reset_temp_degC ${therm_reset_temp_degC};
 }
 
 flash_synapse()

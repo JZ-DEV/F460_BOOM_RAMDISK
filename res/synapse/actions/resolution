@@ -4,6 +4,7 @@ BB=/sbin/busybox;
 set_resolution()
 {
 	wm size ${1}
+	echo "分辨率已修改为${1}"；
 }
 
 case $1 in 

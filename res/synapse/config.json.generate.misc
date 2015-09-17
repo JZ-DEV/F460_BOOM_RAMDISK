@@ -30,9 +30,6 @@ cat << CTAG
 				label:"电池计数重置",
 				action:"fixbattery"
 			}},
-			{ SDescription:{
-				description:"点击回收内存可回收页面以释放内存。",
-			}},
 			{ SButton:{
 				label:"页面回收",
 				action:"process_reclaim"

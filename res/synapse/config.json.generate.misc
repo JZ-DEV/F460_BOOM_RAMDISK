@@ -30,10 +30,6 @@ cat << CTAG
 				label:"电池计数重置",
 				action:"fixbattery"
 			}},
-			{ SButton:{
-				label:"页面回收",
-				action:"process_reclaim"
-			}},
 			{ STitleBar:{
 				title:"分辨率修改",
 				description:"修改分辨率以后会出现布局变化，有些桌面的布局也会被打乱。",

@@ -19,23 +19,34 @@ cat << CTAG
 					{ STitleBar:{
 						title:"CPU频率调节"
 					}},
-					`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq" ]; then
+					`if [ -f "/sys/kernel/msm_limiter/limit_max_freq" ]; then
 						$BB echo '{ SSeekBar:{
 							title:"CPU 最高频率 (全局)",
 							description:"设定 CPU 负载时的最高工作频率。频率可受到thermal影响。",
-							default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq\`',
-							action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
+							default:'\`$BB cat /sys/kernel/msm_limiter/limit_max_freq\`',
+							action:"generic /sys/kernel/msm_limiter/limit_max_freq",
 							values:{'
 								sh $DEVICE CPUFrequencyList
 							$BB echo '}
 						}},'
 					fi`
-					`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq" ]; then
+					`if [ -f "/sys/kernel/msm_limiter/limit_min_freq" ]; then
 						$BB echo '{ SSeekBar:{
 							title:"CPU 最低频率 (全局)",
 							description:"设定 CPU 负载时的最低工作频率。频率可受到thermal影响。",
-							default:'\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq\`',
-							action:"setcpufreq /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",
+							default:'\`$BB cat /sys/kernel/msm_limiter/limit_min_freq\`',
+							action:"generic /sys/kernel/msm_limiter/limit_min_freq",
+							values:{'
+								sh $DEVICE CPUFrequencyList
+							$BB echo '}
+						}},'
+					fi`
+					`if [ -f "/sys/kernel/msm_limiter/suspend_max_freq" ]; then
+						$BB echo '{ SSeekBar:{
+							title:"关屏最大CPU频率",
+							description:"设定屏幕关闭后，CPU可达到的最大频率。",
+							default:'\`$BB cat /sys/kernel/msm_limiter/suspend_max_freq\`',
+							action:"generic /sys/kernel/msm_limiter/suspend_max_freq",
 							values:{'
 								sh $DEVICE CPUFrequencyList
 							$BB echo '}

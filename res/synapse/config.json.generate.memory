@@ -134,27 +134,11 @@ cat << CTAG
 					title:"LMK低内存清理",
 					description:"LMK Minfree 控制每个app可以占用多少内存，并负责多任务内存管理。"
 				}},
-				{ SOptionList:{
-					title:"LMK 配置",
-					description:"你可以选择LMK的配置文件。",
-					default:Custom,
-					action:"lmk_profile /res/synapse/files/lmk_prof",
-					values:[ Custom, Low, Medium, Default, Aggressive, Exterminate,
-					],
-					notify:[
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:[ 
-										"lmk 1",
-										"lmk 2",
-										"lmk 3",
-										"lmk 4",
-										"lmk 5",
-										"lmk 6"
-								],
-							}
-					]
+				{ SCheckBox:{
+					label:"自适应低内存管理",
+					description:"自适应LMK功能可以优先防止延迟，加强LMK执行时的效率.",
+					default:1,
+					action:"generic /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk"
 				}},'
 					for LMK in 1 2 3 4 5 6; do
 						$BB echo '{ SSeekBar:{ '

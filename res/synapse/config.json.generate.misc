@@ -32,19 +32,31 @@ cat << CTAG
 			}},
 			{ STitleBar:{
 				title:"分辨率修改",
-				description:"修改分辨率以后会出现布局变化，有些桌面的布局也会被打乱。",
+			}},
+			{ SLiveLabel:{
+					title: "当前系统lcd_density",
+					description:"此值为build.prop中的数值。",
+					refresh:0,
+					action:"resolution get_lcd_density"
+			}},
+			{ SDescription:{
+				description:"JZ内核不仅单独修改分辨率，通过公式计算后同时设置lcd_density来维持画面结构和比例。修改分辨率后会增加日常流畅度和游戏性能，但是有可能会导致某些应用出现FC的问题，设置后分辨率会变化，lcd_density配置会在下次重启后生效。",
 			}},
 			{ SButton:{
 				label:"2K（官方）",
 				action:"resolution stock"
 			}},
 			{ SButton:{
-				label:"1080（1920*1080）",
-				action:"resolution FHD"
+				label:"2K（JZ）布局稍小",
+				action:"resolution stock_JZ"
 			}},
 			{ SButton:{
-				label:"720（1280*720）",
-				action:"resolution HD"
+				label:"百分之87官方",
+				action:"resolution stock87%"
+			}},
+			{ SButton:{
+				label:"百分之80官方",
+				action:"resolution stock80%"
 			}},
 		]
 }

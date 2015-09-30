@@ -1,0 +1,48 @@
+BB=/sbin/busybox;
+
+if [ ! -e /wadb ];then
+	touch /wadb;
+fi
+
+ip=`$BB ifconfig wlan0 | grep "inet addr:" | sed 's/ //' | sed 's/.*inet addr://' | sed 's/Bcast.*//'`;
+
+getip()
+{
+	state=`getprop service.adb.tcp.port`;
+	[ -n "${state}" ]
+	if [ ${state} != 5555 ] ;then
+		echo "无线ADB服务未运行";
+	else
+		echo "无线ADB服务运行中@nIP为${ip}";
+	fi
+}
+
+adb_turnon()
+{
+	setprop service.adb.tcp.port 5555;
+	stop adbd;
+	start adbd;
+	echo "输入ADB connect ${ip}连接";
+	exit;
+}
+
+adb_turnoff()
+{
+	setprop service.adb.tcp.port -1;
+	stop adbd;
+	start adbd;
+	echo "无线ADB已关闭";
+	exit;
+}
+
+case $1 in 
+	get_ip)
+	getip;
+	;;	
+	turnon)
+	adb_turnon;
+	;;
+	turnoff)
+	adb_turnoff;
+	;;
+esac;

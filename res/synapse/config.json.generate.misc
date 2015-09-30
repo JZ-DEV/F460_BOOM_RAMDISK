@@ -58,6 +58,25 @@ cat << CTAG
 				label:"百分之80官方",
 				action:"resolution stock80%"
 			}},
+			{ STitleBar:{
+				title:"无线ADB",
+			}},
+			{ SDescription:{
+				description:"点击下面的打开无线ADB启动，点击关闭即可关闭，使用方法：在adb端输入“adb connect <ip>”即可连接豌豆荚等工具，此时你也可以输入“adb shell”进入手机的终端！",
+			}},
+			{ SLiveLabel:{
+				title: "输入“adb connect <IP地址>”即可连接",
+				refresh:800,
+				action:"adb get_ip"
+			}},
+			{ SButton:{
+				label:"打开无线adb",
+				action:"adb turnon"
+			}},
+			{ SButton:{
+				label:"关闭无线adb",
+				action:"adb turnoff"
+			}},
 		]
 }
 CTAG
